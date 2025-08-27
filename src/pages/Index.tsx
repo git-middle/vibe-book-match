@@ -1,12 +1,176 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { SearchForm } from "@/components/SearchForm";
+import { BookCard } from "@/components/BookCard";
+import { SearchParams, SearchResult, Book } from "@/types/library";
+import { searchBooks } from "@/api/libraryClient";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2, BookOpen, Sparkles } from "lucide-react";
 
 const Index = () => {
+  const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sortBy, setSortBy] = useState<string>('mood_match');
+  const { toast } = useToast();
+
+  const handleSearch = async (params: SearchParams) => {
+    setIsLoading(true);
+    try {
+      const result = await searchBooks({ ...params, sortBy: sortBy as any });
+      setSearchResult(result);
+      
+      if (result.books.length === 0) {
+        toast({
+          title: "検索結果がありません",
+          description: "条件を変えて再度お試しください。",
+        });
+      } else {
+        toast({
+          title: "検索完了",
+          description: `${result.books.length}冊の本が見つかりました。`,
+        });
+      }
+    } catch (error) {
+      console.error('検索エラー:', error);
+      toast({
+        title: "検索エラー",
+        description: "検索中にエラーが発生しました。しばらく後でお試しください。",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBookClick = (book: Book) => {
+    // 詳細画面への遷移（今後実装）
+    console.log('本の詳細:', book);
+    toast({
+      title: `「${book.title}」`,
+      description: "詳細画面は近日実装予定です。",
+    });
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      {/* ヘッダー */}
+      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-gradient-mood">
+                <BookOpen className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="font-bold text-xl text-foreground">気分で選ぶ本</h1>
+                <p className="text-xs text-muted-foreground">図書館蔵書検索</p>
+              </div>
+            </div>
+            <div className="flex-1" />
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm text-muted-foreground">モック版</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8 space-y-8">
+        {/* 検索フォーム */}
+        <SearchForm onSearch={handleSearch} isLoading={isLoading} />
+
+        {/* 検索結果 */}
+        {searchResult && (
+          <section className="space-y-6">
+            {/* 結果ヘッダー */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-semibold">検索結果</h2>
+                <p className="text-sm text-muted-foreground">
+                  {searchResult.totalCount}冊が見つかりました
+                </p>
+              </div>
+              
+              {searchResult.books.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium">並び替え:</label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-36">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mood_match">気分適合度</SelectItem>
+                      <SelectItem value="publication_date">新着順</SelectItem>
+                      <SelectItem value="popularity">人気順</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+
+            {/* 結果一覧 */}
+            {searchResult.books.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {searchResult.books.map((book) => (
+                  <BookCard
+                    key={book.id}
+                    book={book}
+                    onClick={handleBookClick}
+                    showMoodScores={true}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 space-y-4">
+                <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+                  <BookOpen className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">本が見つかりませんでした</h3>
+                  <p className="text-muted-foreground">
+                    検索条件を変えて、もう一度お試しください。
+                  </p>
+                </div>
+                <Button variant="outline" onClick={() => window.location.reload()}>
+                  新しい検索を始める
+                </Button>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ローディング状態 */}
+        {isLoading && (
+          <div className="text-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
+            <p className="mt-4 text-muted-foreground">あなたにぴったりの本を探しています...</p>
+          </div>
+        )}
+
+        {/* 初期状態のメッセージ */}
+        {!searchResult && !isLoading && (
+          <div className="text-center py-12 space-y-4">
+            <div className="w-20 h-20 mx-auto bg-gradient-mood rounded-full flex items-center justify-center">
+              <BookOpen className="w-10 h-10 text-white" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-semibold text-xl">本との出会いを始めましょう</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                気分や興味に合わせて、図書館の蔵書からぴったりの一冊を見つけます。
+                上のフォームから検索を始めてください。
+              </p>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* フッター */}
+      <footer className="border-t mt-16">
+        <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
+          <p>図書館蔵書検索システム - 気分で選ぶ本（モック版）</p>
+        </div>
+      </footer>
     </div>
   );
 };

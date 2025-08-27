@@ -52,6 +52,19 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// 気分カラーを追加
+				mood: {
+					ukiuki: 'hsl(var(--mood-ukiuki))',
+					shinmiri: 'hsl(var(--mood-shinmiri))',
+					wakuwaku: 'hsl(var(--mood-wakuwaku))',
+					ochitsuki: 'hsl(var(--mood-ochitsuki))',
+					nakitai: 'hsl(var(--mood-nakitai))',
+					chishiki: 'hsl(var(--mood-chishiki))',
+					bouken: 'hsl(var(--mood-bouken))',
+					renai: 'hsl(var(--mood-renai))',
+					'genki-nai': 'hsl(var(--mood-genki-nai))',
+					syuuchuu: 'hsl(var(--mood-syuuchuu))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -62,6 +75,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				}
+			},
+			backgroundImage: {
+				'gradient-warm': 'var(--gradient-warm)',
+				'gradient-mood': 'var(--gradient-mood)'
+			},
+			fontFamily: {
+				sans: ['Noto Sans JP', 'system-ui', 'sans-serif']
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
