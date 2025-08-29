@@ -3,14 +3,33 @@ import { classifyBooksMood } from '@/lib/moodClassifier';
 
 let mockBooks: Book[] = [];
 
-// JSONを一度だけ読み込む
+// JSONを読み込む
 async function loadMockBooks() {
   if (mockBooks.length === 0) {
     const res = await fetch('/books.json');
-    mockBooks = await res.json();
+    const data = await res.json();
+
+    // JSONが { "items": [ ... ] } の形なので、itemsを変換
+    mockBooks = data.items.map((raw: any) => ({
+      id: raw.id,
+      title: raw.title,
+      authors: raw.authors || [],
+      publishYear: raw.pubYear,
+      summary: raw.summary || "",
+
+      // 以下はダミーや空値
+      isbn: "",
+      publisher: "",
+      ndc: "",
+      subjects: [],
+      coverImage: "/mock/covers/noimage.png", // 画像なしの時のデフォルト
+      pageCount: undefined,
+      holdings: []
+    }));
   }
   return mockBooks;
 }
+
 
 // デフォルト設定
 const defaultConfig: LibraryApiConfig = {
