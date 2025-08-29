@@ -1,108 +1,16 @@
 import { Book, SearchParams, SearchResult, LibraryApiConfig } from '@/types/library';
 import { classifyBooksMood } from '@/lib/moodClassifier';
 
-// モックデータ
-const mockBooks: Book[] = [
-  {
-    id: '1',
-    isbn: '9784101092157',
-    title: '海辺のカフカ',
-    authors: ['村上春樹'],
-    publisher: '新潮社',
-    publishYear: 2005,
-    summary: '15歳の少年カフカと、猫と話せる老人ナカタさんの不思議な冒険物語。現実と非現実が交差する、美しくも謎めいた長編小説。',
-    ndc: '913.6',
-    subjects: ['日本文学', '小説', '現代文学'],
-    coverImage: '/mock/covers/kafka.jpg',
-    pageCount: 544,
-    holdings: [
-      { id: '1-1', location: '2階文学コーナー', callNumber: '913.6/ム', status: 'available' },
-      { id: '1-2', location: '1階新着コーナー', callNumber: '913.6/ム', status: 'checked_out' }
-    ]
-  },
-  {
-    id: '2',
-    isbn: '9784003311219',
-    title: '坊っちゃん',
-    authors: ['夏目漱石'],
-    publisher: '岩波書店',
-    publishYear: 1906,
-    summary: '江戸っ子気質の青年教師が四国の中学校で巻き起こすユーモラスな騒動を描いた、漱石初期の代表作。',
-    ndc: '913.6',
-    subjects: ['日本文学', '小説', '明治文学'],
-    coverImage: '/mock/covers/botchan.jpg',
-    pageCount: 224,
-    holdings: [
-      { id: '2-1', location: '2階文学コーナー', callNumber: '913.6/ナ', status: 'available' }
-    ]
-  },
-  {
-    id: '3',
-    isbn: '9784003368015',
-    title: '宇宙からの帰還',
-    authors: ['立花隆'],
-    publisher: '中央公論新社',
-    publishYear: 1985,
-    summary: 'アポロ計画の宇宙飛行士たちが体験した神秘的な体験と、それが彼らの人生観に与えた影響を丹念に追ったノンフィクション。',
-    ndc: '538.9',
-    subjects: ['宇宙開発', 'アポロ計画', '科学技術'],
-    coverImage: '/mock/covers/space.jpg',
-    pageCount: 512,
-    holdings: [
-      { id: '3-1', location: '1階科学コーナー', callNumber: '538.9/タ', status: 'available' }
-    ]
-  },
-  {
-    id: '4',
-    isbn: '9784167158057',
-    title: '容疑者Xの献身',
-    authors: ['東野圭吾'],
-    publisher: '文藝春秋',
-    publishYear: 2008,
-    summary: '天才数学者が隣人の殺人事件に関わる完全犯罪を企てるが、物理学者湯川学との頭脳戦が始まる。直木賞受賞作品。',
-    ndc: '913.6',
-    subjects: ['日本文学', 'ミステリー', '推理小説'],
-    coverImage: '/mock/covers/suspect.jpg',
-    pageCount: 394,
-    holdings: [
-      { id: '4-1', location: '2階文学コーナー', callNumber: '913.6/ヒ', status: 'reserved' },
-      { id: '4-2', location: '3階文庫コーナー', callNumber: 'B913.6/ヒ', status: 'available' }
-    ]
-  },
-  {
-    id: '5',
-    isbn: '9784101001210',
-    title: 'こころ',
-    authors: ['夏目漱石'],
-    publisher: '新潮社',
-    publishYear: 1914,
-    summary: '明治時代の知識人の孤独と苦悩を描いた、日本近代文学の代表作。先生と私、そしてKとの友情と恋愛の悲劇を通して人間の心の奥底を探る。',
-    ndc: '913.6',
-    subjects: ['日本文学', '小説', '明治文学', '心理小説'],
-    coverImage: '/mock/covers/kokoro.jpg',
-    pageCount: 248,
-    holdings: [
-      { id: '5-1', location: '2階文学コーナー', callNumber: '913.6/ナ', status: 'available' },
-      { id: '5-2', location: '3階文庫コーナー', callNumber: 'B913.6/ナ', status: 'available' }
-    ]
-  },
-  {
-    id: '6',
-    isbn: '9784061596230',
-    title: '銃・病原菌・鉄',
-    authors: ['ジャレド・ダイアモンド', '倉骨彰訳'],
-    publisher: '草思社',
-    publishYear: 2012,
-    summary: '人類史における文明の格差がどのように生まれたのかを、地理的・環境的要因から解き明かした名著。ピュリッツァー賞受賞作。',
-    ndc: '204',
-    subjects: ['世界史', '人類学', '文明論'],
-    coverImage: '/mock/covers/guns.jpg',
-    pageCount: 528,
-    holdings: [
-      { id: '6-1', location: '1階歴史コーナー', callNumber: '204/ダ', status: 'available' }
-    ]
+let mockBooks: Book[] = [];
+
+// JSONを一度だけ読み込む
+async function loadMockBooks() {
+  if (mockBooks.length === 0) {
+    const res = await fetch('/books.json');
+    mockBooks = await res.json();
   }
-];
+  return mockBooks;
+}
 
 // デフォルト設定
 const defaultConfig: LibraryApiConfig = {
@@ -120,12 +28,12 @@ export function getLibraryConfig(): LibraryApiConfig {
   return config;
 }
 
-// モック検索関数
+// モック検索 別ファイルより
 async function mockSearch(params: SearchParams): Promise<SearchResult> {
-  // シミュレーション遅延
   await new Promise(resolve => setTimeout(resolve, 500));
-  
-  let filteredBooks = [...mockBooks];
+
+  let filteredBooks = await loadMockBooks();
+  filteredBooks = [...filteredBooks];
   
   // テキスト検索フィルタ
   if (params.freeText) {
