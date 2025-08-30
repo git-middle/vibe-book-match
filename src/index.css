@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 気分で選ぶ本アプリのデザインシステム - 温かみのある図書館テーマ */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
 
 @layer base {
@@ -39,20 +38,18 @@
     --ring: 25 75% 45%;
 
     /* ───────── 新8分類の気分カラー ───────── */
-    --mood-zokuzoku: 2 78% 55%;    /* ゾクゾクしたい：赤みのあるスリル色 */
-    --mood-nakitai: 240 35% 60%;   /* 泣きたい：やさしい青紫 */
-    --mood-kyun: 335 70% 62%;      /* キュンとしたい：ロマンチックピンク */
-    --mood-genki: 28 85% 56%;      /* 元気が欲しい：前向きオレンジ */
-    --mood-fushigi: 200 65% 45%;   /* 不思議な世界へ：知的ブルー */
-    --mood-jikkuri: 120 35% 45%;   /* じっくり味わいたい：落ち着きグリーン */
-    --mood-hotto: 45 85% 60%;      /* ほっとしたい：やわらかいイエロー */
-    --mood-chiteki: 280 50% 50%;   /* 知的に楽しみたい：深いバイオレット */
+    --mood-zokuzoku: 183 50% 66%;    /* ゾクゾクしたい：赤みのあるスリル色 */
+    --mood-nakitai: 183 50% 66%;   /* 泣きたい：やさしい青紫 */
+    --mood-kyun: 183 50% 66%;      /* キュンとしたい：ロマンチックピンク */
+    --mood-genki: 183 50% 66%;      /* 元気が欲しい：前向きオレンジ */
+    --mood-fushigi: 183 50% 66%;   /* 不思議な世界へ：知的ブルー */
+    --mood-jikkuri: 183 50% 66%;   /* じっくり味わいたい：落ち着きグリーン */
+    --mood-hotto: 183 50% 66%;      /* ほっとしたい：やわらかいイエロー */
+    --mood-chiteki: 183 50% 66%;   /* 知的に楽しみたい：深いバイオレット */
 
     /* グラデーション／影／角丸 */
     --gradient-warm: linear-gradient(135deg, hsl(35 40% 85%), hsl(25 60% 70%)); 
     --gradient-mood: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-    /*--gradient-warm: hsl(183 50% 66%); 
-    --gradient-mood: hsl(183 50% 66%);*/
     --shadow-soft: 0 2px 8px -2px hsl(var(--foreground) / 0.1);
     --shadow-mood: 0 4px 12px -4px hsl(var(--primary) / 0.25);
     --radius: 0.75rem;

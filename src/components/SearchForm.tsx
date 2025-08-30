@@ -54,11 +54,12 @@ export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
     <Card className="w-full max-w-4xl mx-auto">
       <CardContent className="p-6 space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent">
-            今の気分にぴったりの一冊を。
+          <h1 className="font-Kaisei text-4xl text-[#626464]">
+          今のあなたに<br></br>ぴったりの一冊を。
           </h1>
+          <br></br>
           <p className="text-muted-foreground">
-            「角川文庫夏フェア2025」に掲載されている本の中から検索できます。
+          「角川文庫夏フェア2025」に掲載されている本の中から検索できます。
           </p>
         </div>
 
@@ -90,7 +91,7 @@ export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
             </Label>
             <Input
               id="freeText"
-              placeholder="例: 不思議な世界へ、キュンとしたい、ほっとしたい..."
+              placeholder="例: 新しい発見をしたい、前向きになりたい、仕事で疲れた..."
               value={freeText}
               onChange={(e) => setFreeText(e.target.value)}
               className="w-full"

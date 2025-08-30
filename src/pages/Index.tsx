@@ -157,8 +157,8 @@ const Index = () => {
             <div className="space-y-2">
               <h3 className="font-semibold text-xl">本との出会いを始めましょう</h3>
               <p className="text-muted-foreground max-w-md mx-auto">
-                気分や興味に合わせて、図書館の蔵書からぴったりの一冊を見つけます。
-                上のフォームから検索を始めてください。
+                気分や興味に合わせ、あなたにぴったりの一冊を見つけます。
+                <br/>上のフォームから検索を始めてください。
               </p>
             </div>
           </div>

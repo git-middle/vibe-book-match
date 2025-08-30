@@ -17,6 +17,7 @@ export default {
 				'2xl': '1400px'
 			}
 		},
+		
 		extend: {
 			colors: {
 				border: 'hsl(var(--border))',
@@ -55,14 +56,14 @@ export default {
 				// 気分カラーを追加
 				mood: {
 					// ★ 新8分類の色トークン
-        			'mood-zokuzoku': 'hsl(var(--mood-zokuzoku))',
-        			'mood-nakitai': 'hsl(var(--mood-nakitai))',
-        			'mood-kyun': 'hsl(var(--mood-kyun))',
-        			'mood-genki': 'hsl(var(--mood-genki))',
-        			'mood-fushigi': 'hsl(var(--mood-fushigi))',
-        			'mood-jikkuri': 'hsl(var(--mood-jikkuri))',
-        			'mood-hotto': 'hsl(var(--mood-hotto))',
-        			'mood-chiteki': 'hsl(var(--mood-chiteki))',
+        			'zokuzoku': 'hsl(var(--mood-zokuzoku))',
+        			'nakitai': 'hsl(var(--mood-nakitai))',
+        			'kyun': 'hsl(var(--mood-kyun))',
+        			'genki': 'hsl(var(--mood-genki))',
+        			'fushigi': 'hsl(var(--mood-fushigi))',
+        			'jikkuri': 'hsl(var(--mood-jikkuri))',
+        			'hotto': 'hsl(var(--mood-hotto))',
+        			'chiteki': 'hsl(var(--mood-chiteki))',
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
@@ -80,7 +81,8 @@ export default {
 				'gradient-mood': 'var(--gradient-mood)'
 			},
 			fontFamily: {
-				sans: ['Noto Sans JP', 'system-ui', 'sans-serif']
+				Kaisei: ['"Kaisei Decol"', 'serif'], // 見出し用
+				sans: ['Noto Sans JP', 'system-ui', 'sans-serif'] //本文用
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -113,3 +115,5 @@ export default {
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
+
