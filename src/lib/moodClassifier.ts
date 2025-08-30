@@ -1,91 +1,139 @@
 import { Book, MoodScore, MoodType } from '@/types/library';
 import { ruleBasedAdjustments, moodToNdcCategories } from './moodMapping';
 
+// 文字正規化（表記ゆれ対策）
+const normalize = (s: string) => s.normalize('NFKC').toLowerCase();
+
 // LLM分類のモック（実際にはAPI呼び出しになる）
 async function getLLMMoodClassification(book: Book): Promise<MoodScore[]> {
   // 実際のLLM呼び出しの代わりにモック分類
-  const text = `${book.title} ${book.summary || ''} ${book.subjects?.join(' ') || ''}`;
-  
-  // 簡単なキーワードベースのモック分類
+  const raw = `${book.title} ${book.summary || ''} ${book.subjects?.join(' ') || ''}`;
+  const text = normalize(raw);
+
   const mockScores: MoodScore[] = [];
-  
-  // キーワードベースの簡単な分類
-  if (text.includes('愛') || text.includes('恋') || text.includes('ロマンス')) {
-    mockScores.push({ mood: '恋愛気分', score: 0.8 });
+
+  // ── 新8分類に対応した簡易ヒューリスティクス ──
+  // 恋愛・青春 → キュン
+  if (text.includes('恋') || text.includes('愛') || text.includes('ロマンス') || text.includes('学園')) {
+    mockScores.push({ mood: 'キュンとしたい', score: 0.8 });
   }
-  if (text.includes('科学') || text.includes('研究') || text.includes('学習')) {
-    mockScores.push({ mood: '知的好奇心', score: 0.9 });
+
+  // ミステリ・サスペンス・ホラー → ゾクゾク
+  if (
+    text.includes('ミステリ') || text.includes('サスペンス') || text.includes('推理') ||
+    text.includes('探偵') || text.includes('ホラー') || text.includes('怪異') || text.includes('怪談')
+  ) {
+    mockScores.push({ mood: 'ゾクゾクしたい', score: 0.9 });
+    // 論理・推理の知的要素も少し加点
+    mockScores.push({ mood: '知的に楽しみたい', score: 0.6 });
   }
-  if (text.includes('冒険') || text.includes('旅') || text.includes('探検')) {
-    mockScores.push({ mood: '冒険したい', score: 0.85 });
-    mockScores.push({ mood: 'ワクワク', score: 0.7 });
+
+  // 科学・研究・学習・技術 → 知的に楽しみたい
+  if (text.includes('科学') || text.includes('研究') || text.includes('学習') || text.includes('技術') || text.includes('評論')) {
+    mockScores.push({ mood: '知的に楽しみたい', score: 0.85 });
   }
-  if (text.includes('家族') || text.includes('人生') || text.includes('思い出')) {
-    mockScores.push({ mood: 'しんみり', score: 0.8 });
+
+  // 冒険・旅・探検・SF/ファンタジー → 不思議な世界へ
+  if (
+    text.includes('冒険') || text.includes('旅') || text.includes('探検') ||
+    text.includes('sf') || text.includes('ファンタジー') || text.includes('魔法') ||
+    text.includes('異世界') || text.includes('時間') || text.includes('タイムリープ')
+  ) {
+    mockScores.push({ mood: '不思議な世界へ', score: 0.85 });
   }
-  if (text.includes('感動') || text.includes('涙') || text.includes('別れ')) {
+
+  // 家族・人生・思い出 → 泣きたい/ほっとしたい
+  if (text.includes('家族') || text.includes('親子') || text.includes('人生') || text.includes('思い出') || text.includes('手紙')) {
+    mockScores.push({ mood: '泣きたい', score: 0.8 });
+    mockScores.push({ mood: 'ほっとしたい', score: 0.6 });
+  }
+
+  // 感動・涙・別れ → 泣きたい
+  if (text.includes('感動') || text.includes('涙') || text.includes('別れ') || text.includes('喪失') || text.includes('再生')) {
     mockScores.push({ mood: '泣きたい', score: 0.9 });
   }
-  if (text.includes('笑い') || text.includes('コメディ') || text.includes('ユーモア')) {
-    mockScores.push({ mood: 'うきうき', score: 0.85 });
+
+  // 笑い・コメディ・ユーモア → ほっとしたい
+  if (text.includes('笑い') || text.includes('コメディ') || text.includes('ユーモア') || text.includes('癒し') || text.includes('やさしい')) {
+    mockScores.push({ mood: 'ほっとしたい', score: 0.75 });
   }
-  if (text.includes('癒し') || text.includes('希望') || text.includes('励まし')) {
-    mockScores.push({ mood: '元気がない', score: 0.8 });
+
+  // 希望・励まし・挑戦・部活 → 元気が欲しい
+  if (text.includes('希望') || text.includes('励まし') || text.includes('挑戦') || text.includes('努力') || text.includes('部活') || text.includes('合格')) {
+    mockScores.push({ mood: '元気が欲しい', score: 0.85 });
   }
-  if (text.includes('詩') || text.includes('瞑想') || text.includes('静か')) {
-    mockScores.push({ mood: '落ち着きたい', score: 0.8 });
+
+  // 詩・哲学・静か・随筆・古典 → じっくり味わいたい
+  if (text.includes('詩') || text.includes('哲学') || text.includes('静か') || text.includes('随筆') || text.includes('古典') || text.includes('文豪') || text.includes('純文学')) {
+    mockScores.push({ mood: 'じっくり味わいたい', score: 0.8 });
   }
-  if (text.includes('学習') || text.includes('仕事') || text.includes('技術')) {
-    mockScores.push({ mood: '集中したい', score: 0.75 });
-  }
-  
-  // デフォルトでランダムなスコアを追加（実際のLLMではより精密）
+
+  // デフォルト（該当なし時）
   if (mockScores.length === 0) {
-    const allMoods: MoodType[] = ['うきうき', 'しんみり', 'ワクワク', '落ち着きたい', '泣きたい'];
+    const allMoods: MoodType[] = [
+      'ゾクゾクしたい',
+      '泣きたい',
+      'キュンとしたい',
+      '元気が欲しい',
+      '不思議な世界へ',
+      'じっくり味わいたい',
+      'ほっとしたい',
+      '知的に楽しみたい',
+    ];
     const randomMood = allMoods[Math.floor(Math.random() * allMoods.length)];
-    mockScores.push({ mood: randomMood, score: 0.5 + Math.random() * 0.3 });
+    mockScores.push({ mood: randomMood, score: 0.6 });
   }
-  
-  return mockScores.slice(0, 3); // 上位3つまで
+
+  // 上位3つまで返す
+  return mockScores
+    .reduce<Record<string, MoodScore>>((acc, ms) => {
+      // 同一moodが複数回pushされた場合は最大値を採用
+      const prev = acc[ms.mood];
+      if (!prev || prev.score < ms.score) acc[ms.mood] = ms;
+      return acc;
+    }, {})
+    .let ? [] as any : Object.values(mockScores.reduce((acc, ms) => { const k = ms.mood; acc[k] = acc[k] && acc[k].score > ms.score ? acc[k] : ms; return acc; }, {} as Record<string, MoodScore>))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
 }
 
 // ルールベース補正
 function applyRuleBasedCorrection(book: Book, llmScores: MoodScore[]): MoodScore[] {
   const scores = new Map<MoodType, number>();
-  
-  // LLMスコアをマップに設定
+
+  // LLMスコアを反映（重み0.7）
   llmScores.forEach(({ mood, score }) => {
-    scores.set(mood, score * 0.7); // LLM重み0.7
+    scores.set(mood, score * 0.7);
   });
-  
-  const text = `${book.title} ${book.summary || ''} ${book.subjects?.join(' ') || ''}`.toLowerCase();
-  
-  // ルールベース補正を適用
+
+  const text = normalize(`${book.title} ${book.summary || ''} ${book.subjects?.join(' ') || ''}`);
+
+  // ルールベース補正（重み0.3）
   ruleBasedAdjustments.forEach(({ keywords, adjustments }) => {
-    const hasKeyword = keywords.some(keyword => text.includes(keyword.toLowerCase()));
-    if (hasKeyword) {
+    const hit = keywords.some(k => text.includes(normalize(k)));
+    if (hit) {
       adjustments.forEach(({ mood, scoreBoost }) => {
-        const currentScore = scores.get(mood) || 0;
-        scores.set(mood, Math.min(1.0, currentScore + scoreBoost * 0.3)); // ルール重み0.3
+        const cur = scores.get(mood) || 0;
+        scores.set(mood, Math.min(1.0, cur + scoreBoost * 0.3));
       });
     }
   });
-  
-  // NDCベース補正
+
+  // NDCベース補正（マッチした気分に+0.06）
   if (book.ndc) {
     Object.entries(moodToNdcCategories).forEach(([mood, ndcCategories]) => {
-      const matchesNdc = ndcCategories.some(ndc => book.ndc?.startsWith(ndc));
-      if (matchesNdc) {
-        const currentScore = scores.get(mood as MoodType) || 0;
-        scores.set(mood as MoodType, Math.min(1.0, currentScore + 0.2 * 0.3));
+      const matches = ndcCategories.some(ndc => book.ndc?.startsWith(ndc));
+      if (matches) {
+        const cur = scores.get(mood as MoodType) || 0;
+        scores.set(mood as MoodType, Math.min(1.0, cur + 0.2 * 0.3));
       }
     });
   }
-  
-  // スコア順でソートして上位3つを返す
+
+  // スコア成形：上位3件
   return Array.from(scores.entries())
     .map(([mood, score]) => ({ mood, score }))
-    .filter(({ score }) => score > 0.1)
+    .filter(({ score }) => score > 0.05)
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
 }
@@ -97,8 +145,8 @@ export async function classifyBookMood(book: Book): Promise<MoodScore[]> {
     return applyRuleBasedCorrection(book, llmScores);
   } catch (error) {
     console.error('気分分類エラー:', error);
-    // エラー時はデフォルトスコアを返す
-    return [{ mood: 'しんみり', score: 0.5 }];
+    // エラー時はデフォルト（8分類の中から安全なもの）
+    return [{ mood: 'じっくり味わいたい', score: 0.5 }];
   }
 }
 
@@ -110,6 +158,5 @@ export async function classifyBooksMood(books: Book[]): Promise<Book[]> {
       return { ...book, moodScores };
     })
   );
-  
   return classifiedBooks;
 }

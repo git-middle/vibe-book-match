@@ -54,16 +54,15 @@ export default {
 				},
 				// 気分カラーを追加
 				mood: {
-					ukiuki: 'hsl(var(--mood-ukiuki))',
-					shinmiri: 'hsl(var(--mood-shinmiri))',
-					wakuwaku: 'hsl(var(--mood-wakuwaku))',
-					ochitsuki: 'hsl(var(--mood-ochitsuki))',
-					nakitai: 'hsl(var(--mood-nakitai))',
-					chishiki: 'hsl(var(--mood-chishiki))',
-					bouken: 'hsl(var(--mood-bouken))',
-					renai: 'hsl(var(--mood-renai))',
-					'genki-nai': 'hsl(var(--mood-genki-nai))',
-					syuuchuu: 'hsl(var(--mood-syuuchuu))'
+					// ★ 新8分類の色トークン
+        			'mood-zokuzoku': 'hsl(var(--mood-zokuzoku))',
+        			'mood-nakitai': 'hsl(var(--mood-nakitai))',
+        			'mood-kyun': 'hsl(var(--mood-kyun))',
+        			'mood-genki': 'hsl(var(--mood-genki))',
+        			'mood-fushigi': 'hsl(var(--mood-fushigi))',
+        			'mood-jikkuri': 'hsl(var(--mood-jikkuri))',
+        			'mood-hotto': 'hsl(var(--mood-hotto))',
+        			'mood-chiteki': 'hsl(var(--mood-chiteki))',
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

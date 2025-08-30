@@ -29,9 +29,10 @@ export function BookCard({ book, onClick, showMoodScores = true }: BookCardProps
     }
   };
 
+  
   const availableHolding = book.holdings?.find(h => h.status === 'available');
   const statusBadge = availableHolding ? (
-    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
       在架
     </Badge>
   ) : (
@@ -39,6 +40,7 @@ export function BookCard({ book, onClick, showMoodScores = true }: BookCardProps
       貸出中
     </Badge>
   );
+
 
   return (
     <Card 
@@ -57,7 +59,8 @@ export function BookCard({ book, onClick, showMoodScores = true }: BookCardProps
               <span className="truncate">{book.authors.join(', ')}</span>
             </div>
           </div>
-          
+
+          {/* 
           <div className="flex items-center gap-2 flex-shrink-0">
             {statusBadge}
             <Button
@@ -66,12 +69,16 @@ export function BookCard({ book, onClick, showMoodScores = true }: BookCardProps
               onClick={handleFavoriteClick}
               className="p-1 h-8 w-8"
             >
-              <Heart 
+            </Button>
+          </div> */}
+          
+          {/*お気に入り機能を将来的に実装する！*/}
+          {/*<Heart 
                 className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} 
               />
-            </Button>
-          </div>
+          */}
         </div>
+       
 
         {/* 概要 */}
         {book.summary && (

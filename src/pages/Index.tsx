@@ -64,13 +64,13 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="font-bold text-xl text-foreground">気分で選ぶ本</h1>
-                <p className="text-xs text-muted-foreground">図書館蔵書検索</p>
+                <p className="text-xs text-muted-foreground">今読みたい本の検索</p>
               </div>
             </div>
             <div className="flex-1" />
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm text-muted-foreground">モック版</span>
+              <span className="text-sm text-muted-foreground">全94冊</span>
             </div>
           </div>
         </div>
@@ -168,7 +168,9 @@ const Index = () => {
       {/* フッター */}
       <footer className="border-t mt-16">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>図書館蔵書検索システム - 気分で選ぶ本（モック版）</p>
+          <p>今読みたい本の検索システム - 気分で選ぶ本</p>
+          <p>　</p>
+          <p>※本アプリは個人による非公式のプロジェクトであり、「角川文庫夏フェア2025」とは関係ありません。</p>
         </div>
       </footer>
     </div>

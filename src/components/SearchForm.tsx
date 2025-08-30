@@ -2,47 +2,49 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { MoodChip } from "./MoodChip";
-import { MoodType, SearchParams } from "@/types/library";
+import { MoodType, MoodKey, SearchParams } from "@/types/library";
+import { moodToKeyMap, keyToMoodMap } from "@/lib/moodMapping";
 
 interface SearchFormProps {
   onSearch: (params: SearchParams) => void;
   isLoading?: boolean;
 }
 
-const allMoods: MoodType[] = [
-  'うきうき', 'しんみり', 'ワクワク', '落ち着きたい', '泣きたい',
-  '知的好奇心', '冒険したい', '恋愛気分', '元気がない', '集中したい'
-];
+// moodToKeyMap（label→key）から並びを作る
+const moodEntries = Object.entries(moodToKeyMap) as [MoodType, MoodKey][];
 
 export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
-  const [selectedMoods, setSelectedMoods] = useState<MoodType[]>([]);
+  // 内部状態はキーで持つ（重複や表記ゆれに強い）
+  const [selectedMoodKeys, setSelectedMoodKeys] = useState<MoodKey[]>([]);
   const [freeText, setFreeText] = useState("");
   const [era, setEra] = useState<string>("all");
   const [length, setLength] = useState<string>("all");
   const [type, setType] = useState<string>("all");
 
-  const handleMoodToggle = (mood: MoodType) => {
-    setSelectedMoods(prev =>
-      prev.includes(mood)
-        ? prev.filter(m => m !== mood)
-        : [...prev, mood]
+  // MoodChip はラベル（MoodType）を返すので、キーに変換してトグル
+  const handleMoodToggleByLabel = (moodLabel: MoodType) => {
+    const key = moodToKeyMap[moodLabel];
+    setSelectedMoodKeys((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
     );
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // 送信時はラベル配列に戻す（SearchParams.moods が MoodType[] の想定）
+    const selectedLabels: MoodType[] = selectedMoodKeys.map((k) => keyToMoodMap[k]);
+
     const searchParams: SearchParams = {
-      moods: selectedMoods,
+      moods: selectedLabels,
       freeText: freeText.trim() || undefined,
       filters: {
         era: era as any,
         length: length as any,
-        type: type as any
-      }
+        type: type as any,
+      },
     };
 
     onSearch(searchParams);
@@ -53,10 +55,10 @@ export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
       <CardContent className="p-6 space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent">
-            いまの気分に、ぴったりの一冊を
+            今の気分にぴったりの一冊を。
           </h1>
           <p className="text-muted-foreground">
-            あなたの気分や興味に合った本を図書館の蔵書から見つけます
+            「角川文庫夏フェア2025」に掲載されている本の中から検索できます。
           </p>
         </div>
 
@@ -65,18 +67,18 @@ export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
           <div className="space-y-3">
             <Label className="text-base font-medium">気分を選んでください（複数選択可）</Label>
             <div className="flex flex-wrap gap-2">
-              {allMoods.map((mood) => (
+              {moodEntries.map(([label, key]) => (
                 <MoodChip
-                  key={mood}
-                  mood={mood}
-                  selected={selectedMoods.includes(mood)}
-                  onClick={handleMoodToggle}
+                  key={key}
+                  mood={label} // MoodChip はラベルを受け取る
+                  selected={selectedMoodKeys.includes(key)}
+                  onClick={handleMoodToggleByLabel} // ラベルで受けてキーに変換してトグル
                 />
               ))}
             </div>
-            {selectedMoods.length > 0 && (
+            {selectedMoodKeys.length > 0 && (
               <p className="text-sm text-muted-foreground">
-                選択中: {selectedMoods.join(', ')}
+                選択中: {selectedMoodKeys.map((k) => keyToMoodMap[k]).join("、")}
               </p>
             )}
           </div>
@@ -88,14 +90,15 @@ export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
             </Label>
             <Input
               id="freeText"
-              placeholder="例: 夏の終わりっぽい、自然が出る本、仕事で疲れた..."
+              placeholder="例: 不思議な世界へ、キュンとしたい、ほっとしたい..."
               value={freeText}
               onChange={(e) => setFreeText(e.target.value)}
               className="w-full"
             />
           </div>
-
-          {/* 絞り込みオプション */}
+          
+          {/*       
+           絞り込みオプション
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label className="text-sm font-medium">年代</Label>
@@ -141,13 +144,15 @@ export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
             </div>
           </div>
 
-          {/* 検索ボタン */}
-          <Button 
-            type="submit" 
+          */}
+
+            {/* 検索ボタン */}
+          <Button
+            type="submit"
             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3"
             disabled={isLoading}
           >
-            {isLoading ? '本を探しています...' : '本を探す'}
+            {isLoading ? "探しています..." : "探す"}
           </Button>
         </form>
       </CardContent>

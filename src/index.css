@@ -17,18 +17,18 @@
     --popover: 35 30% 96%;
     --popover-foreground: 25 15% 15%;
 
-    /* プライマリ - やわらかなオレンジ茶色 */
-    --primary: 25 75% 45%;
+    /* プライマリ */
+    --primary: 183 50% 66%;
     --primary-foreground: 35 30% 96%;
 
-    /* セカンダリ - 温かいベージュ */
+    /* セカンダリ */
     --secondary: 35 35% 88%;
     --secondary-foreground: 25 15% 25%;
 
     --muted: 35 25% 92%;
     --muted-foreground: 25 10% 55%;
 
-    --accent: 35 40% 85%;
+    --accent: 183 50% 66%;
     --accent-foreground: 25 15% 25%;
 
     --destructive: 0 70% 55%;
@@ -38,31 +38,26 @@
     --input: 35 20% 90%;
     --ring: 25 75% 45%;
 
-    /* 気分カラー - 各気分に対応した色 */
-    --mood-ukiuki: 45 85% 60%;      /* うきうき - 明るい黄色 */
-    --mood-shinmiri: 210 45% 55%;   /* しんみり - 落ち着いた青 */
-    --mood-wakuwaku: 15 85% 60%;    /* ワクワク - 活発なオレンジ */
-    --mood-ochitsuki: 120 35% 50%;  /* 落ち着きたい - やわらかい緑 */
-    --mood-nakitai: 240 35% 60%;    /* 泣きたい - やさしい紫 */
-    --mood-chishiki: 200 65% 45%;   /* 知的好奇心 - 知的な青 */
-    --mood-bouken: 330 70% 50%;     /* 冒険したい - 冒険の赤紫 */
-    --mood-renai: 340 65% 60%;      /* 恋愛気分 - ロマンチックピンク */
-    --mood-genki-nai: 180 25% 65%;  /* 元気がない - グレー青 */
-    --mood-syuuchuu: 280 50% 45%;   /* 集中したい - 集中の紫 */
+    /* ───────── 新8分類の気分カラー ───────── */
+    --mood-zokuzoku: 2 78% 55%;    /* ゾクゾクしたい：赤みのあるスリル色 */
+    --mood-nakitai: 240 35% 60%;   /* 泣きたい：やさしい青紫 */
+    --mood-kyun: 335 70% 62%;      /* キュンとしたい：ロマンチックピンク */
+    --mood-genki: 28 85% 56%;      /* 元気が欲しい：前向きオレンジ */
+    --mood-fushigi: 200 65% 45%;   /* 不思議な世界へ：知的ブルー */
+    --mood-jikkuri: 120 35% 45%;   /* じっくり味わいたい：落ち着きグリーン */
+    --mood-hotto: 45 85% 60%;      /* ほっとしたい：やわらかいイエロー */
+    --mood-chiteki: 280 50% 50%;   /* 知的に楽しみたい：深いバイオレット */
 
-    /* グラデーション */
-    --gradient-warm: linear-gradient(135deg, hsl(35 40% 85%), hsl(25 60% 70%));
+    /* グラデーション／影／角丸 */
+    --gradient-warm: linear-gradient(135deg, hsl(35 40% 85%), hsl(25 60% 70%)); 
     --gradient-mood: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-    
-    /* シャドウ */
+    /*--gradient-warm: hsl(183 50% 66%); 
+    --gradient-mood: hsl(183 50% 66%);*/
     --shadow-soft: 0 2px 8px -2px hsl(var(--foreground) / 0.1);
     --shadow-mood: 0 4px 12px -4px hsl(var(--primary) / 0.25);
-    
     --radius: 0.75rem;
-
   }
 
-  /* ダークモード（図書館アプリでは使わない予定だが念のため残す） */
   .dark {
     --background: 25 15% 8%;
     --foreground: 35 30% 90%;
@@ -85,9 +80,7 @@
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+  * { @apply border-border; }
 
   body {
     @apply bg-background text-foreground font-sans;
@@ -100,25 +93,18 @@
     @apply border-2 cursor-pointer select-none;
     box-shadow: var(--shadow-soft);
   }
+  .mood-chip:hover { transform: translateY(-1px); box-shadow: var(--shadow-mood); }
+  .mood-chip.active { transform: translateY(-1px); box-shadow: var(--shadow-mood); }
 
-  .mood-chip:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-mood);
-  }
-
-  .mood-chip.active {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-mood);
-  }
-
-  /* 本カードのスタイル */
+  /* 本カード */
   .book-card {
     @apply bg-card border border-border rounded-xl p-4 transition-all duration-200;
     box-shadow: var(--shadow-soft);
   }
+  .book-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-mood); }
+}
 
-  .book-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-mood);
-  }
+/* 便利ユーティリティ（使っているなら） */
+@layer utilities {
+  .bg-gradient-warm { background-image: var(--gradient-warm); }
 }

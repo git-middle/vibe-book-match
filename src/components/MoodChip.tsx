@@ -3,39 +3,57 @@ import { MoodType, MoodKey } from "@/types/library";
 import { moodToKeyMap } from "@/lib/moodMapping";
 
 interface MoodChipProps {
-  mood: MoodType;
+  mood: MoodType;                  // 表示ラベル（例: 'ゾクゾクしたい'）
   selected: boolean;
   onClick: (mood: MoodType) => void;
   className?: string;
 }
 
+// 新8分類のキーに対応したスタイル
 const moodStyles: Record<MoodKey, string> = {
-  ukiuki: 'bg-mood-ukiuki/20 border-mood-ukiuki text-mood-ukiuki hover:bg-mood-ukiuki/30 data-[selected=true]:bg-mood-ukiuki data-[selected=true]:text-white',
-  shinmiri: 'bg-mood-shinmiri/20 border-mood-shinmiri text-mood-shinmiri hover:bg-mood-shinmiri/30 data-[selected=true]:bg-mood-shinmiri data-[selected=true]:text-white',
-  wakuwaku: 'bg-mood-wakuwaku/20 border-mood-wakuwaku text-mood-wakuwaku hover:bg-mood-wakuwaku/30 data-[selected=true]:bg-mood-wakuwaku data-[selected=true]:text-white',
-  ochitsuki: 'bg-mood-ochitsuki/20 border-mood-ochitsuki text-mood-ochitsuki hover:bg-mood-ochitsuki/30 data-[selected=true]:bg-mood-ochitsuki data-[selected=true]:text-white',
-  nakitai: 'bg-mood-nakitai/20 border-mood-nakitai text-mood-nakitai hover:bg-mood-nakitai/30 data-[selected=true]:bg-mood-nakitai data-[selected=true]:text-white',
-  chishiki: 'bg-mood-chishiki/20 border-mood-chishiki text-mood-chishiki hover:bg-mood-chishiki/30 data-[selected=true]:bg-mood-chishiki data-[selected=true]:text-white',
-  bouken: 'bg-mood-bouken/20 border-mood-bouken text-mood-bouken hover:bg-mood-bouken/30 data-[selected=true]:bg-mood-bouken data-[selected=true]:text-white',
-  renai: 'bg-mood-renai/20 border-mood-renai text-mood-renai hover:bg-mood-renai/30 data-[selected=true]:bg-mood-renai data-[selected=true]:text-white',
-  'genki-nai': 'bg-mood-genki-nai/20 border-mood-genki-nai text-mood-genki-nai hover:bg-mood-genki-nai/30 data-[selected=true]:bg-mood-genki-nai data-[selected=true]:text-white',
-  syuuchuu: 'bg-mood-syuuchuu/20 border-mood-syuuchuu text-mood-syuuchuu hover:bg-mood-syuuchuu/30 data-[selected=true]:bg-mood-syuuchuu data-[selected=true]:text-white'
+  // ゾクゾクしたい
+  zokuzoku:
+    "bg-mood-zokuzoku/20 border-mood-zokuzoku text-mood-zokuzoku hover:bg-mood-zokuzoku/30 data-[selected=true]:bg-mood-zokuzoku data-[selected=true]:text-white",
+  // 泣きたい
+  nakitai:
+    "bg-mood-nakitai/20 border-mood-nakitai text-mood-nakitai hover:bg-mood-nakitai/30 data-[selected=true]:bg-mood-nakitai data-[selected=true]:text-white",
+  // キュンとしたい
+  kyun:
+    "bg-mood-kyun/20 border-mood-kyun text-mood-kyun hover:bg-mood-kyun/30 data-[selected=true]:bg-mood-kyun data-[selected=true]:text-white",
+  // 元気が欲しい
+  genki:
+    "bg-mood-genki/20 border-mood-genki text-mood-genki hover:bg-mood-genki/30 data-[selected=true]:bg-mood-genki data-[selected=true]:text-white",
+  // 不思議な世界へ
+  fushigi:
+    "bg-mood-fushigi/20 border-mood-fushigi text-mood-fushigi hover:bg-mood-fushigi/30 data-[selected=true]:bg-mood-fushigi data-[selected=true]:text-white",
+  // じっくり味わいたい
+  jikkuri:
+    "bg-mood-jikkuri/20 border-mood-jikkuri text-mood-jikkuri hover:bg-mood-jikkuri/30 data-[selected=true]:bg-mood-jikkuri data-[selected=true]:text-white",
+  // ほっとしたい
+  hotto:
+    "bg-mood-hotto/20 border-mood-hotto text-mood-hotto hover:bg-mood-hotto/30 data-[selected=true]:bg-mood-hotto data-[selected=true]:text-white",
+  // 知的に楽しみたい
+  chiteki:
+    "bg-mood-chiteki/20 border-mood-chiteki text-mood-chiteki hover:bg-mood-chiteki/30 data-[selected=true]:bg-mood-chiteki data-[selected=true]:text-white",
 };
 
 export function MoodChip({ mood, selected, onClick, className }: MoodChipProps) {
-  const moodKey = moodToKeyMap[mood];
+  const moodKey = moodToKeyMap[mood]; // label -> key
   const chipStyle = moodStyles[moodKey];
 
   return (
     <button
+      type="button"
+      role="switch"
+      aria-checked={selected}
+      aria-label={mood}
       className={cn(
-        "mood-chip",
+        "mood-chip inline-flex items-center rounded-full border px-4 py-2 text-sm transition-colors",
         chipStyle,
         className
       )}
       data-selected={selected}
       onClick={() => onClick(mood)}
-      type="button"
     >
       {mood}
     </button>

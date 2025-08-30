@@ -9,13 +9,15 @@ async function loadMockBooks() {
     const res = await fetch('/books.json');
     const data = await res.json();
 
-    // JSONが { "items": [ ... ] } の形なので、itemsを変換
-    mockBooks = data.items.map((raw: any) => ({
-      id: raw.id,
-      title: raw.title,
-      authors: raw.authors || [],
-      publishYear: raw.pubYear,
-      summary: raw.summary || "",
+    // items配列をきちんと取り出す
+    const items = Array.isArray(data.items) ? data.items : [];
+
+   mockBooks = items.map((raw: any) => ({
+      id: raw.id ?? "",
+      title: raw.title ?? "",
+      authors: raw.authors ?? [],
+      publishYear: raw.pubYear ?? undefined,
+      summary: raw.summary ?? "",
 
       // 以下はダミーや空値
       isbn: "",

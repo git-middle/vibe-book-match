@@ -1,26 +1,22 @@
 export type MoodType = 
-  | 'うきうき' 
-  | 'しんみり' 
-  | 'ワクワク' 
-  | '落ち着きたい' 
-  | '泣きたい' 
-  | '知的好奇心' 
-  | '冒険したい' 
-  | '恋愛気分' 
-  | '元気がない' 
-  | '集中したい';
-
+  |'ゾクゾクしたい'
+  |'泣きたい'
+  |'キュンとしたい'
+  |'元気が欲しい'
+  |'不思議な世界へ'
+  |'じっくり味わいたい'
+  |'ほっとしたい'
+  |'知的に楽しみたい';
+  
 export type MoodKey = 
-  | 'ukiuki'
-  | 'shinmiri' 
-  | 'wakuwaku'
-  | 'ochitsuki'
-  | 'nakitai'
-  | 'chishiki'
-  | 'bouken'
-  | 'renai'
-  | 'genki-nai'
-  | 'syuuchuu';
+  |'zokuzoku'
+  |'nakitai'
+  |'kyun'
+  |'genki'
+  |'fushigi'
+  |'jikkuri'
+  |'hotto'
+  |'chiteki';
 
 export interface MoodScore {
   mood: MoodType;
