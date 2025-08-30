@@ -15,6 +15,15 @@ interface SearchFormProps {
 // moodToKeyMap（label→key）から並びを作る
 const moodEntries = Object.entries(moodToKeyMap) as [MoodType, MoodKey][];
 
+// 初期値の定数（UIで非表示でも値は持っておく）
+const DEFAULTS = {
+  freeText: "",
+  era: "all",
+  length: "all",
+  type: "all",
+  selectedMoodKeys: [] as MoodKey[],
+};
+
 export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
   // 内部状態はキーで持つ（重複や表記ゆれに強い）
   const [selectedMoodKeys, setSelectedMoodKeys] = useState<MoodKey[]>([]);
@@ -22,6 +31,23 @@ export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
   const [era, setEra] = useState<string>("all");
   const [length, setLength] = useState<string>("all");
   const [type, setType] = useState<string>("all");
+
+  // いまの条件が初期から変わっているか
+  const isDirty =
+    freeText.trim() !== DEFAULTS.freeText ||
+    era !== DEFAULTS.era ||
+    length !== DEFAULTS.length ||
+    type !== DEFAULTS.type ||
+    selectedMoodKeys.length > 0;
+
+  // 検索は呼ばない（=結果はそのまま）
+  const handleResetFilters = () => {
+    setFreeText(DEFAULTS.freeText);
+    setEra(DEFAULTS.era);
+    setLength(DEFAULTS.length);
+    setType(DEFAULTS.type);
+    setSelectedMoodKeys(DEFAULTS.selectedMoodKeys);
+  };
 
   // MoodChip はラベル（MoodType）を返すので、キーに変換してトグル
   const handleMoodToggleByLabel = (moodLabel: MoodType) => {
@@ -146,6 +172,17 @@ export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
           </div>
 
           */}
+
+          {/* リセット（検索ボタンと“同じ形” / 上に配置） */}
+          <Button
+            type="button"
+            onClick={handleResetFilters}
+            disabled={!isDirty || isLoading}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3"  // 形は同じ、色だけ軽く
+            aria-label="検索条件をリセット"
+            title="検索条件だけクリアします（結果はそのまま）">
+          条件をリセット
+          </Button>
 
             {/* 検索ボタン */}
           <Button
