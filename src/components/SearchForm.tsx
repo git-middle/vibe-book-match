@@ -173,6 +173,15 @@ export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
 
           */}
 
+          {/* 検索ボタン */}
+          <Button
+            type="submit"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3"
+            disabled={isLoading}
+          >
+            {isLoading ? "探しています..." : "探す"}
+          </Button>
+
           {/* リセット（検索ボタンと“同じ形” / 上に配置） */}
           <Button
             type="button"
@@ -184,14 +193,6 @@ export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
           条件をリセット
           </Button>
 
-            {/* 検索ボタン */}
-          <Button
-            type="submit"
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3"
-            disabled={isLoading}
-          >
-            {isLoading ? "探しています..." : "探す"}
-          </Button>
         </form>
       </CardContent>
     </Card>
