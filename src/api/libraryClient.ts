@@ -120,56 +120,71 @@ async function mockSearch(params: SearchParams): Promise<SearchResult> {
   // 気分分類（各 book に moodScores を付加）
   const classifiedBooks = await classifyBooksMood(filteredBooks);
 
-  // ===== 追加: 「気分だけで検索したときに全部出る」を防ぐフィルタ =====
-  const selectedMoods = new Set(params.moods ?? []);
-  const hasQuery = !!params.freeText?.trim();
+  // ===== AND条件での気分フィルタ（各気分がしきい値以上） =====
+const selectedMoods = new Set(params.moods ?? []);
+const hasQuery = !!params.freeText?.trim();
 
-  let working = classifiedBooks;
+let working = classifiedBooks;
 
-  if (selectedMoods.size > 0) {
-    // まず基本しきい値でフィルタ
-    let threshold = hasQuery ? MIN_MOOD_WITH_QUERY : MIN_MOOD_ONLY;
+if (selectedMoods.size > 0) {
+  // しきい値：気分のみ検索は高め、キーワード併用時は少し緩め
+  let thresholdEach = hasQuery ? 0.25 : 0.40;
+  const FLOOR = 0.20;      // 下限
+  const STEP = 0.05;       // 緩和幅
 
-    const filterOnce = (th: number) =>
-      working
-        .map(b => {
-          const maxScore = maxSelectedMoodScore((b as any).moodScores, selectedMoods);
-          return { b, maxScore };
-        })
-        .filter(x => x.maxScore >= th)
-        .map(x => {
-          // ランキング用：選択気分のスコア合計も計算（並べ替えに使う）
-          const sumScore = ((x.b as any).moodScores ?? [])
-            .filter((s: any) => selectedMoods.has(s.mood))
-            .reduce((acc: number, s: any) => acc + s.score, 0);
-          (x.b as any).__maxMood = x.maxScore;
-          (x.b as any).__sumMood = sumScore;
-          return x.b;
-        });
+  // moodScores を {mood -> score} にしておく
+  const toScoreMap = (ms: any[] | undefined) => {
+    const map = new Map<string, number>();
+    (ms ?? []).forEach(s => map.set(s.mood, s.score));
+    return map;
+  };
 
-    let filtered = filterOnce(threshold);
+  const filterOnce = (th: number) =>
+    working
+      .map(b => {
+        const map = toScoreMap((b as any).moodScores);
+        // AND判定：選択した各気分が th 以上か？
+        const eachScores = Array.from(selectedMoods).map(m => map.get(m) ?? 0);
+        const pass = eachScores.every(s => s >= th);
+        // ソート用の集計（通過したものだけ意味あり）
+        const sum = eachScores.reduce((a, s) => a + s, 0);
+        const min = Math.min(...eachScores);
+        return { b, pass, sum, min };
+      })
+      .filter(x => x.pass)
+      .map(x => {
+        (x.b as any).__sumMood = x.sum;
+        (x.b as any).__minMood = x.min;
+        return x.b;
+      });
 
-    // 0件のときだけ段階的に緩和（最低 MIN_MOOD_FLOOR まで）
-    while (filtered.length === 0 && threshold > MIN_MOOD_FLOOR) {
-      threshold = Math.max(MIN_MOOD_FLOOR, threshold - RELAX_STEP);
-      filtered = filterOnce(threshold);
-    }
+  // まず基本しきい値で試す
+  let filtered = filterOnce(thresholdEach);
 
-    working = filtered;
-
-    // 並べ替え：合計スコア -> 最大スコア -> タイトル
-    working.sort((a: any, b: any) => {
-      if (b.__sumMood !== a.__sumMood) return (b.__sumMood ?? 0) - (a.__sumMood ?? 0);
-      if (b.__maxMood !== a.__maxMood) return (b.__maxMood ?? 0) - (a.__maxMood ?? 0);
-      return (a.title ?? '').localeCompare(b.title ?? '');
-    });
-  } else {
-    // 気分未選択時は従来通り（freeText や他フィルタのみ）
-    // タイトルで安定ソートだけ足しておく
-    working = [...classifiedBooks].sort((a, b) =>
-      (a.title ?? '').localeCompare(b.title ?? '')
-    );
+  // 0件のときのみ、段階的に緩和（ANDを維持したまま）
+  while (filtered.length === 0 && thresholdEach > FLOOR) {
+    thresholdEach = Math.max(FLOOR, thresholdEach - STEP);
+    filtered = filterOnce(thresholdEach);
   }
+
+  working = filtered;
+
+  // 並べ替え：合計スコア -> 最小スコア（均一性） -> タイトル
+  working.sort((a: any, b: any) => {
+    if ((b.__sumMood ?? 0) !== (a.__sumMood ?? 0)) {
+      return (b.__sumMood ?? 0) - (a.__sumMood ?? 0);
+    }
+    if ((b.__minMood ?? 0) !== (a.__minMood ?? 0)) {
+      return (b.__minMood ?? 0) - (a.__minMood ?? 0);
+    }
+    return (a.title ?? '').localeCompare(b.title ?? '');
+  });
+} else {
+  // 気分未選択時は従来どおり
+  working = [...classifiedBooks].sort((a, b) =>
+    (a.title ?? '').localeCompare(b.title ?? '')
+  );
+}
 
   return {
     books: working,
