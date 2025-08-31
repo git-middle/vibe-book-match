@@ -24,9 +24,10 @@ async function loadMockBooks() {
       publisher: "",
       ndc: "",
       subjects: [],
-      coverImage: "/mock/covers/noimage.png", // 画像なしの時のデフォルト
+      //coverImage: raw.coverUrl ?? "/mock/covers/noimage.png", // 画像なしの時のデフォルト
       pageCount: undefined,
-      holdings: []
+      holdings: [],
+      detailUrl: raw.detailUrl ?? null,
     }));
   }
   return mockBooks;

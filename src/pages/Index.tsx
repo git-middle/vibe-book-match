@@ -8,6 +8,22 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, BookOpen, Sparkles } from "lucide-react";
 
+// index.tsx の先頭付近（import の下あたり）に追加
+const getDetailUrl = (book: Book) => {
+  if (book.detailUrl && /^https?:\/\//.test(book.detailUrl)) {
+    return book.detailUrl;
+  }
+  // フォールバック: 特設ページを表示
+  const author = book.authors?.[0] ?? "";
+  const siteFilter = [
+    "site:kadokawabunko.jp",
+    "site:bunko.kadokawa.co.jp",
+    "site:kadokawa.co.jp",
+  ].join(" OR ");
+  const q = `${siteFilter} "${book.title}" ${author}`.trim();
+  return "https://kadobun.jp/special/natsu-fair/";
+};
+
 const Index = () => {
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +59,14 @@ const Index = () => {
     }
   };
 
-  const handleBookClick = (book: Book) => {
+  // 検索された本を押した時に起こること
+    const handleBookClick = (book: Book) => {
+    const url = getDetailUrl(book);
+    window.open(url, "_blank", "noopener");
+  };
+
+  /*
+    const handleBookClick = (book: Book) => {
     // 詳細画面への遷移（今後実装）
     console.log('本の詳細:', book);
     toast({
@@ -51,6 +74,7 @@ const Index = () => {
       description: "詳細画面は近日実装予定です。",
     });
   };
+  */
 
   return (
     <div className="min-h-screen bg-background">

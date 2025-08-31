@@ -37,6 +37,7 @@ export interface Book {
   pageCount?: number;
   moodScores?: MoodScore[];
   holdings?: Holding[];
+  detailUrl?: string | null; 
 }
 
 export interface Holding {
