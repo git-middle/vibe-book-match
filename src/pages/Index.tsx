@@ -76,6 +76,21 @@ const Index = () => {
   };
   */
 
+  // 並び替え済みの本リストを生成
+const sortedBooks = searchResult
+  ? [...searchResult.books].sort((a, b) => {
+      if (sortBy === "mood_match") {
+        // 気分適合度（moodScores か __sumMood を利用）
+        return (b as any).__sumMood - (a as any).__sumMood;
+      }
+      if (sortBy === "publication_date") {
+        // 出版年で新しい順
+        return (b.publishYear ?? 0) - (a.publishYear ?? 0);
+      }
+      return 0;
+    })
+  : [];
+
   return (
     <div className="min-h-screen bg-background">
       {/* ヘッダー */}
@@ -102,7 +117,10 @@ const Index = () => {
 
       <main className="container mx-auto px-4 py-8 space-y-8">
         {/* 検索フォーム */}
-        <SearchForm onSearch={handleSearch} isLoading={isLoading} />
+        <SearchForm 
+          onSearch={handleSearch} 
+          isLoading={isLoading}
+        />
 
         {/* 検索結果 */}
         {searchResult && (
@@ -134,9 +152,9 @@ const Index = () => {
             </div>
 
             {/* 結果一覧 */}
-            {searchResult.books.length > 0 ? (
+            {sortedBooks.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {searchResult.books.map((book) => (
+                {sortedBooks.map((book) => (
                   <BookCard
                     key={book.id}
                     book={book}
