@@ -126,7 +126,7 @@ const Index = () => {
                     <SelectContent>
                       <SelectItem value="mood_match">気分適合度</SelectItem>
                       <SelectItem value="publication_date">新着順</SelectItem>
-                      <SelectItem value="popularity">人気順</SelectItem>
+                      {/* <SelectItem value="popularity">人気順</SelectItem>*/}
                     </SelectContent>
                   </Select>
                 </div>
