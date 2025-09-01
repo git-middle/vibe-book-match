@@ -33,7 +33,7 @@ async function loadMockBooks() {
       id: raw.id ?? "",
       title: raw.title ?? "",
       authors: raw.authors ?? [],
-      publishYear: raw.pubYear ?? undefined,
+      publishYear: (raw.publishYear ?? raw.pubYear) ?? undefined,
       summary: raw.summary ?? "",
       isbn: "",
       publisher: "",
@@ -120,7 +120,7 @@ async function mockSearch(params: SearchParams): Promise<SearchResult> {
   // 気分分類（各 book に moodScores を付加）
   const classifiedBooks = await classifyBooksMood(filteredBooks);
 
-  // ===== AND条件での気分フィルタ（各気分がしきい値以上） =====
+// ===== AND条件での気分フィルタ（各気分がしきい値以上） =====
 const selectedMoods = new Set(params.moods ?? []);
 const hasQuery = !!params.freeText?.trim();
 
@@ -184,11 +184,12 @@ if (selectedMoods.size > 0) {
   working = [...classifiedBooks].sort((a, b) =>
     (a.title ?? '').localeCompare(b.title ?? '')
   );
+
 }
 
-  return {
+return {
     books: working,
-    totalCount: working.length
+    totalCount: working.length,
   };
 }
 
@@ -210,15 +211,15 @@ async function realApiSearch(params: SearchParams): Promise<SearchResult> {
 }
 
 // 検索API
-export async function searchBooks(params: SearchParams): Promise<SearchResult> {
+  export async function searchBooks(params: SearchParams): Promise<SearchResult> {
   return config.useMock ? mockSearch(params) : realApiSearch(params);
-}
+  }
 
 // 本の詳細取得
-export async function getBook(id: string): Promise<Book | null> {
-  if (config.useMock) {
-    await new Promise(resolve => setTimeout(resolve, 200));
-    const book = mockBooks.find(b => b.id === id);
+  export async function getBook(id: string): Promise<Book | null> {
+    if (config.useMock) {
+      await new Promise(resolve => setTimeout(resolve, 200));
+      const book = mockBooks.find(b => b.id === id);
     if (book) {
       // 気分分類を追加
       const [classifiedBook] = await classifyBooksMood([book]);
@@ -242,11 +243,11 @@ export async function getBook(id: string): Promise<Book | null> {
 }
 
 // 類似本の取得
-export async function getSimilarBooks(bookId: string): Promise<Book[]> {
-  if (config.useMock) {
-    await new Promise(resolve => setTimeout(resolve, 300));
+  export async function getSimilarBooks(bookId: string): Promise<Book[]> {
+    if (config.useMock) {
+      await new Promise(resolve => setTimeout(resolve, 300));
     // 簡単な類似本ロジック：同じNDCカテゴリの本
-    const book = mockBooks.find(b => b.id === bookId);
+      const book = mockBooks.find(b => b.id === bookId);
     if (!book) return [];
 
     const similar = mockBooks
@@ -266,5 +267,6 @@ export async function getSimilarBooks(bookId: string): Promise<Book[]> {
     }
 
     return response.json();
-  }
+    
+} 
 }
