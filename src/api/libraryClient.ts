@@ -3,13 +3,13 @@ import { classifyBooksMood } from '@/lib/moodClassifier';
 
 let mockBooks: Book[] = [];
 
-// ===== しきい値設定 =====
+// ===== 追加: しきい値設定 =====
 const MIN_MOOD_ONLY = 0.40;       // 気分のみ検索時の基本しきい値
 const MIN_MOOD_WITH_QUERY = 0.25; // 気分 + キーワード併用時
 const MIN_MOOD_FLOOR = 0.20;      // 緩和の下限
 const RELAX_STEP = 0.05;          // 段階的に緩和する幅
 
-// ===== 選択気分に対する最大スコアを取り出す =====
+// ===== 追加: 選択気分に対する最大スコアを取り出す =====
 function maxSelectedMoodScore(
   moodScores: { mood: string; score: number }[] | undefined,
   selected: Set<string>
@@ -33,7 +33,7 @@ async function loadMockBooks() {
       id: raw.id ?? "",
       title: raw.title ?? "",
       authors: raw.authors ?? [],
-      publishYear: (raw.publishYear ?? raw.pubYear) ?? undefined,
+      publishYear: raw.pubYear ?? undefined,
       summary: raw.summary ?? "",
       isbn: "",
       publisher: "",
@@ -120,78 +120,63 @@ async function mockSearch(params: SearchParams): Promise<SearchResult> {
   // 気分分類（各 book に moodScores を付加）
   const classifiedBooks = await classifyBooksMood(filteredBooks);
 
-// ===== AND条件での気分フィルタ（各気分がしきい値以上） =====
-const selectedMoods = new Set(params.moods ?? []);
-const hasQuery = !!params.freeText?.trim();
+  // ===== 追加: 「気分だけで検索したときに全部出る」を防ぐフィルタ =====
+  const selectedMoods = new Set(params.moods ?? []);
+  const hasQuery = !!params.freeText?.trim();
 
-let working = classifiedBooks;
+  let working = classifiedBooks;
 
-if (selectedMoods.size > 0) {
-  // しきい値：気分のみ検索は高め、キーワード併用時は少し緩め
-  let thresholdEach = hasQuery ? 0.25 : 0.40;
-  const FLOOR = 0.20;      // 下限
-  const STEP = 0.05;       // 緩和幅
+  if (selectedMoods.size > 0) {
+    // まず基本しきい値でフィルタ
+    let threshold = hasQuery ? MIN_MOOD_WITH_QUERY : MIN_MOOD_ONLY;
 
-  // moodScores を {mood -> score} にしておく
-  const toScoreMap = (ms: any[] | undefined) => {
-    const map = new Map<string, number>();
-    (ms ?? []).forEach(s => map.set(s.mood, s.score));
-    return map;
-  };
+    const filterOnce = (th: number) =>
+      working
+        .map(b => {
+          const maxScore = maxSelectedMoodScore((b as any).moodScores, selectedMoods);
+          return { b, maxScore };
+        })
+        .filter(x => x.maxScore >= th)
+        .map(x => {
+          // ランキング用：選択気分のスコア合計も計算（並べ替えに使う）
+          const sumScore = ((x.b as any).moodScores ?? [])
+            .filter((s: any) => selectedMoods.has(s.mood))
+            .reduce((acc: number, s: any) => acc + s.score, 0);
+          (x.b as any).__maxMood = x.maxScore;
+          (x.b as any).__sumMood = sumScore;
+          return x.b;
+        });
 
-  const filterOnce = (th: number) =>
-    working
-      .map(b => {
-        const map = toScoreMap((b as any).moodScores);
-        // AND判定：選択した各気分が th 以上か？
-        const eachScores = Array.from(selectedMoods).map(m => map.get(m) ?? 0);
-        const pass = eachScores.every(s => s >= th);
-        // ソート用の集計（通過したものだけ意味あり）
-        const sum = eachScores.reduce((a, s) => a + s, 0);
-        const min = Math.min(...eachScores);
-        return { b, pass, sum, min };
-      })
-      .filter(x => x.pass)
-      .map(x => {
-        (x.b as any).__sumMood = x.sum;
-        (x.b as any).__minMood = x.min;
-        return x.b;
-      });
+    let filtered = filterOnce(threshold);
 
-  // まず基本しきい値で試す
-  let filtered = filterOnce(thresholdEach);
+    // 0件のときだけ段階的に緩和（最低 MIN_MOOD_FLOOR まで）
+    while (filtered.length === 0 && threshold > MIN_MOOD_FLOOR) {
+      threshold = Math.max(MIN_MOOD_FLOOR, threshold - RELAX_STEP);
+      filtered = filterOnce(threshold);
+    }
 
-  // 0件のときのみ、段階的に緩和（ANDを維持したまま）
-  while (filtered.length === 0 && thresholdEach > FLOOR) {
-    thresholdEach = Math.max(FLOOR, thresholdEach - STEP);
-    filtered = filterOnce(thresholdEach);
+    working = filtered;
+
+    // 並べ替え：合計スコア -> 最大スコア -> タイトル
+    working.sort((a: any, b: any) => {
+      if (b.__sumMood !== a.__sumMood) return (b.__sumMood ?? 0) - (a.__sumMood ?? 0);
+      if (b.__maxMood !== a.__maxMood) return (b.__maxMood ?? 0) - (a.__maxMood ?? 0);
+      return (a.title ?? '').localeCompare(b.title ?? '');
+    });
+  } else {
+    // 気分未選択時は従来通り（freeText や他フィルタのみ）
+    // タイトルで安定ソートだけ足しておく
+    working = [...classifiedBooks].sort((a, b) =>
+      (a.title ?? '').localeCompare(b.title ?? '')
+    );
   }
 
-  working = filtered;
-
-  // 並べ替え：合計スコア -> 最小スコア（均一性） -> タイトル
-  working.sort((a: any, b: any) => {
-    if ((b.__sumMood ?? 0) !== (a.__sumMood ?? 0)) {
-      return (b.__sumMood ?? 0) - (a.__sumMood ?? 0);
-    }
-    if ((b.__minMood ?? 0) !== (a.__minMood ?? 0)) {
-      return (b.__minMood ?? 0) - (a.__minMood ?? 0);
-    }
-    return (a.title ?? '').localeCompare(b.title ?? '');
-  });
-} else {
-  // 気分未選択時は従来どおり
-  working = [...classifiedBooks].sort((a, b) =>
-    (a.title ?? '').localeCompare(b.title ?? '')
-  );
-
-}
-
-return {
+  return {
     books: working,
-    totalCount: working.length,
+    totalCount: working.length
   };
 }
+// ====== 置き換えここまで ======
 
 // 実API検索関数（未実装）
 async function realApiSearch(params: SearchParams): Promise<SearchResult> {
@@ -211,15 +196,15 @@ async function realApiSearch(params: SearchParams): Promise<SearchResult> {
 }
 
 // 検索API
-  export async function searchBooks(params: SearchParams): Promise<SearchResult> {
+export async function searchBooks(params: SearchParams): Promise<SearchResult> {
   return config.useMock ? mockSearch(params) : realApiSearch(params);
-  }
+}
 
 // 本の詳細取得
-  export async function getBook(id: string): Promise<Book | null> {
-    if (config.useMock) {
-      await new Promise(resolve => setTimeout(resolve, 200));
-      const book = mockBooks.find(b => b.id === id);
+export async function getBook(id: string): Promise<Book | null> {
+  if (config.useMock) {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    const book = mockBooks.find(b => b.id === id);
     if (book) {
       // 気分分類を追加
       const [classifiedBook] = await classifyBooksMood([book]);
@@ -243,11 +228,11 @@ async function realApiSearch(params: SearchParams): Promise<SearchResult> {
 }
 
 // 類似本の取得
-  export async function getSimilarBooks(bookId: string): Promise<Book[]> {
-    if (config.useMock) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+export async function getSimilarBooks(bookId: string): Promise<Book[]> {
+  if (config.useMock) {
+    await new Promise(resolve => setTimeout(resolve, 300));
     // 簡単な類似本ロジック：同じNDCカテゴリの本
-      const book = mockBooks.find(b => b.id === bookId);
+    const book = mockBooks.find(b => b.id === bookId);
     if (!book) return [];
 
     const similar = mockBooks
@@ -267,6 +252,5 @@ async function realApiSearch(params: SearchParams): Promise<SearchResult> {
     }
 
     return response.json();
-    
-} 
+  }
 }
