@@ -7,11 +7,11 @@ import { useState } from "react";
 
 interface BookCardProps {
   book: Book;
-  onClick?: (book: Book) => void;
+  onDetailClick?: (book: Book) => void;
   showMoodScores?: boolean;
 }
 
-export function BookCard({ book, onClick, showMoodScores = true }: BookCardProps) {
+export function BookCard({ book, onDetailClick, showMoodScores = true }: BookCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
@@ -45,7 +45,7 @@ export function BookCard({ book, onClick, showMoodScores = true }: BookCardProps
   return (
     <Card 
       className="book-card cursor-pointer relative group"
-      onClick={() => onClick?.(book)}
+      onClick={() => onDetailClick?.(book)}
     >
       <CardContent className="p-4 space-y-3">
         {/* ヘッダー部分 */}
@@ -72,11 +72,14 @@ export function BookCard({ book, onClick, showMoodScores = true }: BookCardProps
             </Button>
           </div> */}
           
-          {/*お気に入り機能を将来的に実装する！*/}
-          {/*<Heart 
-                className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} 
-              />
-          */}
+          {/*お気に入り機能*/}
+          <button onClick={handleFavoriteClick}>
+            <Heart
+              className={`w-5 h-5 ${
+                isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"
+              }`}
+            />
+          </button>
         </div>
        
 
@@ -132,6 +135,12 @@ export function BookCard({ book, onClick, showMoodScores = true }: BookCardProps
             分類: {book.ndc}
           </div>
         )}
+        {/* 詳細ボタン */}
+        <div className="mt-3">
+          <Button variant="outline" size="sm" onClick={() => onDetailClick?.(book)}>
+            詳細を見る
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

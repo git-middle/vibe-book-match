@@ -159,7 +159,7 @@ const sortedBooks = searchResult
                   <BookCard
                     key={book.id}
                     book={book}
-                    onClick={handleBookClick}
+                    onDetailClick={handleBookClick}
                     showMoodScores={true}
                   />
                 ))}
