@@ -3,13 +3,13 @@ import { classifyBooksMood } from '@/lib/moodClassifier';
 
 let mockBooks: Book[] = [];
 
-// ===== 追加: しきい値設定 =====
+// ===== しきい値設定 =====
 const MIN_MOOD_ONLY = 0.40;       // 気分のみ検索時の基本しきい値
 const MIN_MOOD_WITH_QUERY = 0.25; // 気分 + キーワード併用時
 const MIN_MOOD_FLOOR = 0.20;      // 緩和の下限
 const RELAX_STEP = 0.05;          // 段階的に緩和する幅
 
-// ===== 追加: 選択気分に対する最大スコアを取り出す =====
+// ===== 選択気分に対する最大スコアを取り出す =====
 function maxSelectedMoodScore(
   moodScores: { mood: string; score: number }[] | undefined,
   selected: Set<string>
@@ -62,7 +62,17 @@ export function getLibraryConfig(): LibraryApiConfig {
   return config;
 }
 
-// ====== ここから置き換え：mockSearch ======
+// ===== 著者検索専用の完全一致関数を追加 =====
+function matchesAuthor(authors: string[], query: string): boolean {
+  return authors.some(author => {
+    // 著者名を苗字と名前に分割（スペース対応）
+    const parts = author.split(/\s+/);
+    // 苗字一致 or 名前一致 or フルネーム一致
+    return parts.includes(query) || author === query;
+  });
+}
+
+// ====== mockSearch ======
 async function mockSearch(params: SearchParams): Promise<SearchResult> {
   await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -70,15 +80,15 @@ async function mockSearch(params: SearchParams): Promise<SearchResult> {
   filteredBooks = [...filteredBooks];
 
   // テキスト検索フィルタ
-  if (params.freeText?.trim()) {
-    const searchText = params.freeText.toLowerCase().trim();
-    filteredBooks = filteredBooks.filter(book =>
-      book.title.toLowerCase().includes(searchText) ||
-      book.summary?.toLowerCase().includes(searchText) ||
-      book.authors.some(author => author.toLowerCase().includes(searchText)) ||
-      book.subjects?.some(subject => subject.toLowerCase().includes(searchText))
-    );
-  }
+ if (params.freeText?.trim()) {
+  const searchText = params.freeText.toLowerCase().trim();
+  filteredBooks = filteredBooks.filter(book =>
+    book.title.toLowerCase().includes(searchText) ||
+    book.summary?.toLowerCase().includes(searchText) ||
+    matchesAuthor(book.authors.map(a => a.toLowerCase()), searchText) ||
+    book.subjects?.some(subject => subject.toLowerCase().includes(searchText))
+  );
+ }
 
   // 既存フィルタ（era / length / type）
   if (params.filters) {
@@ -120,7 +130,7 @@ async function mockSearch(params: SearchParams): Promise<SearchResult> {
   // 気分分類（各 book に moodScores を付加）
   const classifiedBooks = await classifyBooksMood(filteredBooks);
 
-  // ===== 追加: 「気分だけで検索したときに全部出る」を防ぐフィルタ =====
+  // =====  「気分だけで検索したときに全部出る」を防ぐフィルタ =====
   const selectedMoods = new Set(params.moods ?? []);
   const hasQuery = !!params.freeText?.trim();
 
