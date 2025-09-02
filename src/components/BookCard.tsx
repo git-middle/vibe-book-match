@@ -15,21 +15,25 @@ export function BookCard({ book, onDetailClick, showMoodScores = true }: BookCar
   const [isFavorite, setIsFavorite] = useState(false);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsFavorite(!isFavorite);
-    
-    // LocalStorageに保存（実際の実装）
-    const favorites = JSON.parse(localStorage.getItem('library-favorites') || '[]');
-    if (isFavorite) {
-      const newFavorites = favorites.filter((id: string) => id !== book.id);
-      localStorage.setItem('library-favorites', JSON.stringify(newFavorites));
-    } else {
-      favorites.push(book.id);
-      localStorage.setItem('library-favorites', JSON.stringify(favorites));
-    }
-  };
+  e.stopPropagation();
+  setIsFavorite(!isFavorite);
 
-  
+  const favorites: Book[] = JSON.parse(localStorage.getItem("library-favorites") || "[]");
+
+  if (isFavorite) {
+    // 削除
+    const newFavorites = favorites.filter((b) => b.id !== book.id);
+    localStorage.setItem("library-favorites", JSON.stringify(newFavorites));
+  } else {
+    // 追加（重複チェック付き）
+    const exists = favorites.some((b) => b.id === book.id);
+    if (!exists) {
+      favorites.push(book);
+      localStorage.setItem("library-favorites", JSON.stringify(favorites));
+    }
+  }
+};
+
   const availableHolding = book.holdings?.find(h => h.status === 'available');
   const statusBadge = availableHolding ? (
      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
@@ -45,7 +49,6 @@ export function BookCard({ book, onDetailClick, showMoodScores = true }: BookCar
   return (
     <Card 
       className="book-card cursor-pointer relative group"
-      onClick={() => onDetailClick?.(book)}
     >
       <CardContent className="p-4 space-y-3">
         {/* ヘッダー部分 */}

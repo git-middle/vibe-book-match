@@ -6,7 +6,7 @@ export default function FavoritesPage() {
   const [favorites, setFavorites] = useState<Book[]>([]);
 
   useEffect(() => {
-    const stored = localStorage.getItem("favorites");
+    const stored = localStorage.getItem("library-favorites");
     if (stored) {
       setFavorites(JSON.parse(stored));
     }
