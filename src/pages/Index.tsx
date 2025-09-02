@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, BookOpen, Sparkles } from "lucide-react";
+import { FloatingBookshelfButton } from "@/components/FloatingBookshelfButton";
 
 // index.tsx の先頭付近（import の下あたり）に追加
 const getDetailUrl = (book: Book) => {
@@ -215,6 +216,7 @@ const sortedBooks = searchResult
           <p>※本アプリは個人による非公式のプロジェクトであり、「角川文庫夏フェア2025」とは関係ありません。</p>
         </div>
       </footer>
+      <FloatingBookshelfButton />
     </div>
   );
 };
