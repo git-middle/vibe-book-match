@@ -169,6 +169,7 @@ const Index = ({ favorites, onToggleFavorite, onDetailClick }: IndexProps) => {
       {/* フッター */}
       <footer className="border-t mt-16 text-center text-sm text-muted-foreground p-6">
         <p>今読みたい本の検索システム - 気分で選ぶ本</p>
+        <br></br>
         <p>※本アプリは個人による非公式のプロジェクトであり、「角川文庫夏フェア2025」とは関係ありません。</p>
       </footer>
     </div>

@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Heart, MapPin, Calendar, User } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface BookCardProps {
   book: Book;
@@ -30,13 +31,35 @@ export function BookCard({
     </Badge>
   );
 
+  // ★ 読破状態を管理するstateを追加
+  const [isRead, setIsRead] = useState(false);
+
+  // ★ 読破状態の保存処理を追加
+  const handleReadToggle = () => {
+    const stored: string[] = JSON.parse(localStorage.getItem("library-read") || "[]");
+    let updated;
+    if (isRead) {
+      updated = stored.filter((id) => id !== book.id);
+    } else {
+      updated = [...stored, book.id];
+    }
+    localStorage.setItem("library-read", JSON.stringify(updated));
+    setIsRead(!isRead);
+  };
+ 
+   // 既読/未読の状態を localStorage から復元
+   useEffect(() => {
+   const stored: string[] = JSON.parse(localStorage.getItem("library-read") || "[]");
+   setIsRead(stored.includes(book.id));}, [book.id]);
+
   return (
-    <Card className="book-card cursor-pointer relative group">
+     <Card className={`book-card relative group ${isRead ? "bg-gray-200" : ""}`}>
       <CardContent className="p-4 space-y-3">
         {/* ヘッダー部分 */}
         <div className="flex justify-between items-start gap-3">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg leading-tight line-clamp-2 text-card-foreground group-hover:text-primary transition-colors">
+            <h3 className={`font-semibold text-lg leading-tight line-clamp-2 group-hover:none transition-colors
+             ${isRead ? "text-muted-foreground" : "text-card-foreground"}`}>
               {book.title}
             </h3>
             <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
@@ -51,6 +74,7 @@ export function BookCard({
               e.stopPropagation();
               onToggleFavorite?.();
             }}
+             className="flex-shrink-0"
           >
             <Heart
               className={`w-5 h-5 ${
@@ -106,9 +130,16 @@ export function BookCard({
         {book.ndc && <div className="text-xs text-muted-foreground">分類: {book.ndc}</div>}
 
         {/* 詳細ボタン */}
-        <div className="mt-3">
+        <div className="mt-3 flex justify-between gap-2">
           <Button variant="outline" size="sm" onClick={() => onDetailClick?.(book)}>
             詳細を見る
+          </Button>
+        <Button
+            className="bg-primary text-white" 
+            size="sm"
+            onClick={handleReadToggle}             
+          >
+            {isRead ? "未読に戻す" : "既読にする"}     
           </Button>
         </div>
       </CardContent>
