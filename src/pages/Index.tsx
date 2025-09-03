@@ -11,21 +11,14 @@ import { Loader2, BookOpen, Sparkles } from "lucide-react";
 interface IndexProps {
   favorites: Book[];
   onToggleFavorite: (book: Book) => void;
+  onDetailClick: (book: Book) => void;
 }
 
-const Index = ({ favorites, onToggleFavorite }: IndexProps) => {
+const Index = ({ favorites, onToggleFavorite, onDetailClick }: IndexProps) => {
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [sortBy, setSortBy] = useState<string>("mood_match");
   const { toast } = useToast();
-
-  // 本の詳細リンクを決定
-  const getDetailUrl = (book: Book) => {
-    if (book.detailUrl && /^https?:\/\//.test(book.detailUrl)) {
-      return book.detailUrl;
-    }
-    return "https://kadobun.jp/special/natsu-fair/";
-  };
 
   const handleSearch = async (params: SearchParams) => {
     setIsLoading(true);
@@ -54,11 +47,6 @@ const Index = ({ favorites, onToggleFavorite }: IndexProps) => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleBookClick = (book: Book) => {
-    const url = getDetailUrl(book);
-    window.open(url, "_blank", "noopener");
   };
 
   const sortedBooks = searchResult
@@ -132,7 +120,7 @@ const Index = ({ favorites, onToggleFavorite }: IndexProps) => {
                   <BookCard
                     key={book.id}
                     book={book}
-                    onDetailClick={handleBookClick}
+                    onDetailClick={onDetailClick}
                     showMoodScores={true}
                     isFavorite={favorites.some((b) => b.id === book.id)}  
                     onToggleFavorite={() => onToggleFavorite(book)}     

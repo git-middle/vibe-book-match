@@ -33,12 +33,36 @@ const App = () => {
     });
   };
 
+// 詳細リンクを作る関数（ホームと本棚で共通利用）
+  const getDetailUrl = (book: Book) => {
+    if (book.detailUrl && /^https?:\/\//.test(book.detailUrl)) {
+      return book.detailUrl;
+    }
+    const author = book.authors?.[0] ?? "";
+    const siteFilter = [
+      "site:kadokawabunko.jp",
+      "site:bunko.kadokawa.co.jp",
+      "site:kadokawa.co.jp",
+    ].join(" OR ");
+    const q = `${siteFilter} "${book.title}" ${author}`.trim();
+    return "https://kadobun.jp/special/natsu-fair/"; // フォールバック
+  };
+
+  const handleDetailClick = (book: Book) => {
+    const url = getDetailUrl(book);
+    window.open(url, "_blank", "noopener");
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-background">
         {/* ホーム */}
         <div style={{ display: activeTab === "home" ? "block" : "none" }}>
-          <Index favorites={favorites} onToggleFavorite={toggleFavorite} />
+          <Index 
+          favorites={favorites} 
+          onToggleFavorite={toggleFavorite} 
+          onDetailClick={handleDetailClick}
+          />
         </div>
 
         {/* 本棚 */}
@@ -46,6 +70,8 @@ const App = () => {
           <FavoritesPage
             favorites={favorites}
             onBack={() => setActiveTab("home")}
+            onToggleFavorite={toggleFavorite}
+            onDetailClick={handleDetailClick}
           />
         </div>
 

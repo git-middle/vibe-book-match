@@ -113,11 +113,11 @@ export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
           {/* 自由入力 */}
           <div className="space-y-2">
             <Label htmlFor="freeText" className="text-base font-medium">
-              キーワードや気分を自由に入力
+              本のタイトルや著者名を入力
             </Label>
             <Input
               id="freeText"
-              placeholder="例: 新しい発見をしたい、前向きになりたい、仕事で疲れた..."
+              placeholder="例：夏目、猫、など"
               value={freeText}
               onChange={(e) => setFreeText(e.target.value)}
               className="w-full"
