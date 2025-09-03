@@ -1,20 +1,13 @@
-import { useEffect, useState } from "react";
 import { BookCard } from "@/components/BookCard";
 import { Book } from "@/types/library";
+import { Button } from "@/components/ui/button"; 
 
-export default function FavoritesPage() {
-  const [favorites, setFavorites] = useState<Book[]>([]);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("library-favorites");
-    if (stored) {
-      setFavorites(JSON.parse(stored));
-    }
-  }, []);
-
+export default function FavoritesPage({ favorites, onBack }: { favorites: Book[], onBack: () => void }) {
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">お気に入り一覧</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-xl font-bold">お気に入り一覧</h1>
+      </div>
       {favorites.length === 0 ? (
         <p>まだお気に入りはありません。</p>
       ) : (
