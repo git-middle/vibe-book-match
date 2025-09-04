@@ -21,6 +21,17 @@ const Index = ({ favorites, onToggleFavorite, onDetailClick }: IndexProps) => {
   const { toast } = useToast();
 
   const handleSearch = async (params: SearchParams) => {
+    
+     if (!navigator.onLine) {
+    toast({
+      title: "オフラインです",
+      description: "インターネットに接続してから再度お試しください。",
+      variant: "destructive",
+    });
+    setSearchResult(null);
+    return;
+  }
+   
     setIsLoading(true);
     try {
       const result = await searchBooks({ ...params, sortBy: sortBy as any });
