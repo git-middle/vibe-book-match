@@ -10,7 +10,9 @@ interface BookCardProps {
   onDetailClick?: (book: Book) => void;
   showMoodScores?: boolean;
   isFavorite?: boolean;               
-  onToggleFavorite?: () => void;  
+  onToggleFavorite?: () => void;
+  isRead?: boolean;
+  onToggleRead?: () => void;
 }
 
 export function BookCard({
@@ -19,8 +21,11 @@ export function BookCard({
   showMoodScores = true,
   isFavorite = false,
   onToggleFavorite,
+  isRead = false,                 
+  onToggleRead,
 }: BookCardProps) {
   const availableHolding = book.holdings?.find((h) => h.status === "available");
+  
   const statusBadge = availableHolding ? (
     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
       在架
@@ -31,26 +36,7 @@ export function BookCard({
     </Badge>
   );
 
-  // ★ 読破状態を管理するstateを追加
-  const [isRead, setIsRead] = useState(false);
 
-  // ★ 読破状態の保存処理を追加
-  const handleReadToggle = () => {
-    const stored: string[] = JSON.parse(localStorage.getItem("library-read") || "[]");
-    let updated;
-    if (isRead) {
-      updated = stored.filter((id) => id !== book.id);
-    } else {
-      updated = [...stored, book.id];
-    }
-    localStorage.setItem("library-read", JSON.stringify(updated));
-    setIsRead(!isRead);
-  };
- 
-   // 既読/未読の状態を localStorage から復元
-   useEffect(() => {
-   const stored: string[] = JSON.parse(localStorage.getItem("library-read") || "[]");
-   setIsRead(stored.includes(book.id));}, [book.id]);
 
   return (
      <Card className={`book-card relative group ${isRead ? "bg-gray-200" : ""}`}>
@@ -137,7 +123,10 @@ export function BookCard({
         <Button
             className="bg-primary text-white" 
             size="sm"
-            onClick={handleReadToggle}             
+            onClick={(e) => {
+            e.stopPropagation();
+            onToggleRead?.(); 
+            }}            
           >
             {isRead ? "未読に戻す" : "既読にする"}     
           </Button>

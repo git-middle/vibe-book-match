@@ -9,6 +9,7 @@ const queryClient = new QueryClient();
 const App = () => {
   const [activeTab, setActiveTab] = useState<"home" | "favorites">("home");
   const [favorites, setFavorites] = useState<Book[]>([]);
+  const [readBooks, setReadBooks] = useState<string[]>([]);
 
   // 初期化（localStorage から）
   useEffect(() => {
@@ -32,6 +33,28 @@ const App = () => {
       return updated;
     });
   };
+
+// 初期化
+useEffect(() => {
+  const stored = localStorage.getItem("library-read");
+  if (stored) {
+    setReadBooks(JSON.parse(stored));
+  }
+}, []);
+
+// 切り替え関数
+const toggleRead = (bookId: string) => {
+  setReadBooks((prev) => {
+    let updated;
+    if (prev.includes(bookId)) {
+      updated = prev.filter((id) => id !== bookId);
+    } else {
+      updated = [...prev, bookId];
+    }
+    localStorage.setItem("library-read", JSON.stringify(updated));
+    return updated;
+  });
+};
 
 // 詳細リンクを作る関数（ホームと本棚で共通利用）
   const getDetailUrl = (book: Book) => {
@@ -62,6 +85,8 @@ const App = () => {
           favorites={favorites} 
           onToggleFavorite={toggleFavorite} 
           onDetailClick={handleDetailClick}
+          readBooks={readBooks}
+          onToggleRead={toggleRead}   
           />
         </div>
 
@@ -72,6 +97,8 @@ const App = () => {
             onBack={() => setActiveTab("home")}
             onToggleFavorite={toggleFavorite}
             onDetailClick={handleDetailClick}
+            readBooks={readBooks}
+            onToggleRead={toggleRead}   
           />
         </div>
 
@@ -80,7 +107,7 @@ const App = () => {
           onClick={() =>
             setActiveTab((prev) => (prev === "home" ? "favorites" : "home"))
           }
-          className="fixed bottom-6 right-6 w20 h-20 shadow-lg rounded-full overflow-hidden"
+          className="fixed bottom-6 right-6 w-20 h-20 shadow-lg rounded-full overflow-hidden"
         >
           <img src={activeTab === "home" ? "/bookshelf.png" : "/home.png"}
           alt={activeTab === "home" ? "本棚" : "ホーム"}

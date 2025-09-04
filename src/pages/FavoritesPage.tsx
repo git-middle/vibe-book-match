@@ -6,6 +6,8 @@ interface FavoritesPageProps {
   onBack: () => void;
   onToggleFavorite: (book: Book) => void;
   onDetailClick: (book: Book) => void;
+  readBooks: string[];                   
+  onToggleRead: (bookId: string) => void;
 }
 
 export default function FavoritesPage({ 
@@ -13,6 +15,8 @@ export default function FavoritesPage({
   onBack,
   onToggleFavorite,
   onDetailClick,
+  readBooks,
+  onToggleRead,
 }: FavoritesPageProps) {
   return (
     <div className="p-4">
@@ -32,6 +36,8 @@ export default function FavoritesPage({
             onToggleFavorite={() => onToggleFavorite(book)}
             onDetailClick={onDetailClick}
             showMoodScores={true}
+            isRead={readBooks.includes(book.id)}
+            onToggleRead={() => onToggleRead(book.id)} 
             />
           ))}
         </div>

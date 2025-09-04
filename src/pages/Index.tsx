@@ -12,9 +12,11 @@ interface IndexProps {
   favorites: Book[];
   onToggleFavorite: (book: Book) => void;
   onDetailClick: (book: Book) => void;
+  readBooks: string[];
+  onToggleRead: (bookId: string) => void; 
 }
 
-const Index = ({ favorites, onToggleFavorite, onDetailClick }: IndexProps) => {
+const Index = ({ favorites, onToggleFavorite, onDetailClick, readBooks, onToggleRead }: IndexProps) => {
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [sortBy, setSortBy] = useState<string>("mood_match");
@@ -136,7 +138,9 @@ const Index = ({ favorites, onToggleFavorite, onDetailClick }: IndexProps) => {
                     onDetailClick={onDetailClick}
                     showMoodScores={true}
                     isFavorite={favorites.some((b) => b.id === book.id)}  
-                    onToggleFavorite={() => onToggleFavorite(book)}     
+                    onToggleFavorite={() => onToggleFavorite(book)}  
+                    isRead={readBooks.includes(book.id)}  
+                    onToggleRead={() => onToggleRead(book.id)}             
                   />
                 ))}
               </div>
