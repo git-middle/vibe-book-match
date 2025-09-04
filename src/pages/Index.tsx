@@ -20,17 +20,19 @@ const Index = ({ favorites, onToggleFavorite, onDetailClick }: IndexProps) => {
   const [sortBy, setSortBy] = useState<string>("mood_match");
   const { toast } = useToast();
 
-  const handleSearch = async (params: SearchParams) => {
-    
-     if (!navigator.onLine) {
-    toast({
-      title: "オフラインです",
-      description: "インターネットに接続してから再度お試しください。",
-      variant: "destructive",
-    });
-    setSearchResult(null);
-    return;
-  }
+     const handleSearch = async (params: SearchParams) => {
+      // 安全にオフライン判定するフック
+      const isOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
+
+    if (!isOnline) {
+      toast({
+        title: "オフラインです",
+        description: "インターネットに接続してから再度お試しください。",
+        variant: "destructive",
+      });
+      setSearchResult(null);
+      return;
+    }
    
     setIsLoading(true);
     try {
@@ -137,6 +139,14 @@ const Index = ({ favorites, onToggleFavorite, onDetailClick }: IndexProps) => {
                     onToggleFavorite={() => onToggleFavorite(book)}     
                   />
                 ))}
+              </div>
+              ) : !(typeof navigator !== "undefined" ? navigator.onLine : true) ? (   // 🔹オフライン専用メッセージ
+              <div className="text-center py-12 space-y-4">
+              <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+              <BookOpen className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <h3 className="font-semibold text-lg">オフラインです</h3>
+              <p className="text-muted-foreground">インターネット接続を確認してください。</p>
               </div>
             ) : (
               <div className="text-center py-12 space-y-4">
