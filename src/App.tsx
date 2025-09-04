@@ -80,9 +80,12 @@ const App = () => {
           onClick={() =>
             setActiveTab((prev) => (prev === "home" ? "favorites" : "home"))
           }
-          className="fixed bottom-6 right-6 w-16 h-16 rounded-full shadow-lg bg-primary text-white"
+          className="fixed bottom-6 right-6 w20 h-20 shadow-lg rounded-full overflow-hidden"
         >
-          {activeTab === "home" ? "本棚" : "ホーム"}
+          <img src={activeTab === "home" ? "/bookshelf.png" : "/home.png"}
+          alt={activeTab === "home" ? "本棚" : "ホーム"}
+          className="w-full h-full object-contain"
+        />
         </button>
       </div>
     </QueryClientProvider>
