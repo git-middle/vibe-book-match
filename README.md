@@ -1,73 +1,98 @@
-# Welcome to your Lovable project
+#---------------------　English Version　-------------------------#
 
-## Project info
+#Book Selection by Mood App
 
-**URL**: https://lovable.dev/projects/81d5777d-b43a-4d68-843b-7c63dca67c9c
+This app is a personal PWA (Progressive Web App) that helps you find and read books based on your current mood.
+It supports search, favorites, and read/unread management, aiming to make book discovery more enjoyable.
 
-## How can I edit this code?
+1.Features
 
-There are several ways of editing your application.
+--Search
 
-**Use Lovable**
+Search for books by mood or keyword
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/81d5777d-b43a-4d68-843b-7c63dca67c9c) and start prompting.
+Sort results by Mood Match or Newest
 
-Changes made via Lovable will be committed automatically to this repo.
+Displays results from a dataset of 94 books
 
-**Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+--Favorites
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Mark books as favorites (toggleable from both Home and Bookshelf)
 
-Follow these steps:
+View a list of favorite books in the Bookshelf page
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+--Read / Unread Management
 
-# Step 3: Install the necessary dependencies.
-npm i
+Each book card has a button to mark as Read or Mark as Unread
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Read books are displayed with a gray background and dimmed title
 
-**Edit a file directly in GitHub**
+States are linked between Home and Bookshelf (reflected in real-time)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
 
-**Use GitHub Codespaces**
+--PWA Support
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Installable on smartphones and PCs, usable like a native app
 
-## What technologies are used for this project?
+Switch pages via icons (Home / Bookshelf)
 
-This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+2.Tech Stack
 
-## How can I deploy this project?
+Frontend Framework: React
 
-Simply open [Lovable](https://lovable.dev/projects/81d5777d-b43a-4d68-843b-7c63dca67c9c) and click on Share -> Publish.
+Build Tool: Vite
 
-## Can I connect a custom domain to my Lovable project?
+Language: TypeScript
 
-Yes, you can!
+UI Libraries: Tailwind CSS, shadcn/ui
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+State Management: React Hooks (useState, useEffect)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Data Storage: LocalStorage (favorites / read status)
+
+Icons: Lucide
+
+#---------------------　日本語バージョン　-------------------------#
+#  気分で選ぶ本
+
+このアプリは「そのときの気分に合った本を探して読める」個人用の PWA (Progressive Web App) です。  
+検索・お気に入り・既読管理をサポートし、本との出会いをより楽しくすることを目指しています。  
+
+---
+
+##  主な機能
+
+-  **検索**
+  - 気分やキーワードで本を検索
+  - 並び替え（気分適合順 / 新着順）が可能
+  - 検索結果は 94 冊のデータを対象に表示
+
+-  **お気に入り機能**
+  - 気になった本をお気に入り登録（ホーム/本棚 両方から切り替え可能）
+  - 本棚ページでお気に入りした本を一覧表示
+
+-  **既読 / 未読管理**
+  - 各本に「既読にする / 未読に戻す」ボタンを表示
+  - 既読にするとカードがグレー表示、タイトル文字色が薄くなる
+  - 状態はホーム/本棚両方でリンク（リアルタイムで反映）
+
+-  **PWA対応**
+  - スマホや PC にインストールしてアプリのように利用可能
+  - アイコン（ホーム / 本棚）でページ切り替え
+
+---
+
+## 🛠 技術スタック
+
+- **フロントエンドフレームワーク**: [React](https://reactjs.org/)
+- **開発環境**: [Vite](https://vitejs.dev/)
+- **言語**: TypeScript
+- **UIライブラリ**: [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/)
+- **状態管理**: React Hooks (`useState`, `useEffect`)
+- **データ管理**: LocalStorage（お気に入り / 既読情報を保存）
+- **アイコン**: [Lucide](https://lucide.dev/)
+
+---
