@@ -6,31 +6,38 @@ This app is a personal PWA (Progressive Web App) that helps you find and read bo
 It supports search, favorites, and read/unread management, aiming to make book discovery more enjoyable.
 
 1.Features
+ーーーーーーーーーーーーーーーーーーーーー
+📌 Search by Mood Buttons
+ーーーーーーーーーーーーーーーーーーーーー
+→ Choose from 8 different moods, and books that match your mood will be suggested.
+→ You can select multiple moods, and the search works as “OR” rather than “AND.”
 
---Search
+ーーーーーーーーーーーーーーーーーーーーー
+📌 Search by Author or Book Title
+ーーーーーーーーーーーーーーーーーーーーー
+→ You can also search by author name or book title.
+→ Perfect if you want to check whether your favorite author’s works are available.
 
-Search for books by mood or keyword
+ーーーーーーーーーーーーーーーーーーーーー
+📌 Favorites Feature
+ーーーーーーーーーーーーーーーーーーーーー
+→ Tap the heart icon on the top-right of a book card to add it to your favorites.
+→ Favorited books will appear on your bookshelf.
+→ The bookshelf displays books in the order they were added.
+→ You can toggle favorites on and off anytime by tapping the heart again.
 
-Sort results by Mood Match or Newest
+ーーーーーーーーーーーーーーーーーーーーー
+📌 Track Read Books
+ーーーーーーーーーーーーーーーーーーーーー
+→ Use the “Mark as Read” or “Mark as Unread” buttons to track whether you’ve finished a book.
+→ Just like the favorites feature, you can toggle this on and off anytime.
 
-Displays results from a dataset of 94 books
+ーーーーーーーーーーーーーーーーーーーーー
+If you’re interested, check it out at the link below!
 
-
---Favorites
-
-Mark books as favorites (toggleable from both Home and Bookshelf)
-
-View a list of favorite books in the Bookshelf page
-
-
---Read / Unread Management
-
-Each book card has a button to mark as Read or Mark as Unread
-
-Read books are displayed with a gray background and dimmed title
-
-States are linked between Home and Bookshelf (reflected in real-time)
-
+👉 Try the app here:
+https://vibe-book-match.vercel.app/
+ーーーーーーーーーーーーーーーーーーーーー
 
 --PWA Support
 
@@ -56,34 +63,43 @@ Data Storage: LocalStorage (favorites / read status)
 Icons: Lucide
 
 #---------------------　日本語バージョン　-------------------------#
-#  気分で選ぶ本
+🌸気分で選ぶ本
+その時の気分で本を検索できるアプリです。
 
-このアプリは「そのときの気分に合った本を探して読める」個人用の PWA (Progressive Web App) です。  
-検索・お気に入り・既読管理をサポートし、本との出会いをより楽しくすることを目指しています。  
+【アプリの特徴】
+ーーーーーーーーーーーーーーーーーーーーー
+📌 気分ボタンによる検索
+ーーーーーーーーーーーーーーーーーーーーー
+→ 8種類の気分から好きなボタンを押すと、気分にあった本がセレクトされます。
+→複数選択も可能ですが「かつ」というより「または」で検索されます。
 
----
+ーーーーーーーーーーーーーーーーーーーーー
+📌 著者名や本のタイトルでの検索
+ーーーーーーーーーーーーーーーーーーーーー
+→本の著者名やタイトルでも検索することが可能です。
+特定の好きな作家さんがいれば、その人の本があるかどうかを検索できます。
 
-##  主な機能
+ーーーーーーーーーーーーーーーーーーーーー
+📌 お気に入り機能
+ーーーーーーーーーーーーーーーーーーーーー
+→検索されたブックカードの右上のハートマークを押すと、
+お気に入り登録ができます。
+→お気に入り登録された本は本棚に表示されます。
+→本棚はお気に入りされた順に表示されます。
+→ハートをタップすることで何回でもお気に入りの登録と解除ができます。
 
--  **検索**
-  - 気分やキーワードで本を検索
-  - 並び替え（気分適合順 / 新着順）が可能
-  - 検索結果は 94 冊のデータを対象に表示
+ーーーーーーーーーーーーーーーーーーーーー
+📌 読んだ本を記録できる機能
+ーーーーーーーーーーーーーーーーーーーーー
+→ 「既読にする」、「未読にする」ボタンをタップすることで本を読破済かどうか記録することができます。
+→このボタンもお気に入り機能と同様に何回でも登録と解除ができます。
 
--  **お気に入り機能**
-  - 気になった本をお気に入り登録（ホーム/本棚 両方から切り替え可能）
-  - 本棚ページでお気に入りした本を一覧表示
+ーーーーーーーーーーーーーーーーーーーーー
+気になった方はぜひ下記リンクよりアクセス！
 
--  **既読 / 未読管理**
-  - 各本に「既読にする / 未読に戻す」ボタンを表示
-  - 既読にするとカードがグレー表示、タイトル文字色が薄くなる
-  - 状態はホーム/本棚両方でリンク（リアルタイムで反映）
-
--  **PWA対応**
-  - スマホや PC にインストールしてアプリのように利用可能
-  - アイコン（ホーム / 本棚）でページ切り替え
-
----
+👉 アプリはこちら：
+https://vibe-book-match.vercel.app/
+ーーーーーーーーーーーーーーーーーーーーー
 
 ## 🛠 技術スタック
 
